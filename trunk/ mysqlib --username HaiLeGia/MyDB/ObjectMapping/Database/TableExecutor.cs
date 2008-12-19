@@ -17,12 +17,12 @@ namespace ObjectMapping.Database
 			set { connectionManager = value; }
 		}
 
-		public virtual void CreateTables(IList<ClassMetaData> metaDatas)
+		public virtual void CreateTables(ICollection<ClassMetaData> metaDatas)
 		{
-			for (var i = 0; i < metaDatas.Count; i++)
-			{
-				CreateTable(metaDatas[i]);
-			}
+            foreach(var metadata in metaDatas)
+            {
+                CreateTable(metadata);
+            }
 		}
 
 		public virtual int CreateTable(ClassMetaData metadata)
@@ -75,17 +75,16 @@ namespace ObjectMapping.Database
 			}
 		}
 
-		public virtual void CreateRelation(IList<ClassMetaData> metaDatas)
+		public virtual void CreateRelation(ICollection<ClassMetaData> metaDatas)
 		{
-			for (var i = 0; i < metaDatas.Count; i++)
-			{
-				var relationProperties = metaDatas[i].RelationProperties;
-				foreach (var pair in relationProperties)
-				{
-					CreateTable(pair.Value);	
-				}
-				
-			}
+            foreach(var metadata in metaDatas)
+            {
+                var relationProperties = metadata.RelationProperties;
+                foreach (var pair in relationProperties)
+                {
+                    CreateTable(pair.Value);
+                }
+            }
 		}
 
 		public virtual int CreateTable(RelationInfo relationInfo)
@@ -119,21 +118,21 @@ namespace ObjectMapping.Database
 			}
 		}
 
-		public virtual void CreateGenericType(IList<ClassMetaData> metaDatas)
+		public virtual void CreateGenericType(ICollection<ClassMetaData> metaDatas)
 		{
-			for (var i = 0; i < metaDatas.Count; i++)
-			{
-				var listInfos = metaDatas[i].ListProperties;
-				foreach (var pair in listInfos)
-				{
-					CreateTable(pair.Value);
-				}
-				var dictInfos = metaDatas[i].DictProperties;
-				foreach (var info in dictInfos)
-				{
-					CreateTable(info.Value);
-				}
-			}
+            foreach(var metadata in metaDatas)
+            {
+                var listInfos = metadata.ListProperties;
+                foreach (var pair in listInfos)
+                {
+                    CreateTable(pair.Value);
+                }
+                var dictInfos = metadata.DictProperties;
+                foreach (var info in dictInfos)
+                {
+                    CreateTable(info.Value);
+                }
+            }
 		}
 
 		public virtual int CreateTable(GenericDictInfo dictInfo)
@@ -147,7 +146,8 @@ namespace ObjectMapping.Database
 			queryBuilder.Append("CREATE TABLE IF NOT EXISTS " + tableName + "(");
 			queryBuilder.Append("Id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY, ");
 			queryBuilder.Append("ContainerType VARCHAR(512) NOT NULL, ");
-			queryBuilder.Append("ContainerId BIGINT(20) NOT NULL, ");
+		    queryBuilder.Append("PropertyName VARCHAR(100) NOT NULL, ");
+            queryBuilder.Append("ContainerId BIGINT(20) NOT NULL, ");
 			queryBuilder.Append("Key " + sqlKeyType + " NOT NULL, ");
 			queryBuilder.Append("Value " + sqlValueType + " NULL, ");
 			queryBuilder.Append("INDEX ContainerType, ");
@@ -170,6 +170,7 @@ namespace ObjectMapping.Database
 			queryBuilder.Append("CREATE TABLE IF NOT EXISTS " + tableName + "(");
 			queryBuilder.Append("Id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY, ");
 			queryBuilder.Append("ContainerType VARCHAR(512) NOT NULL, ");
+		    queryBuilder.Append("PropertyName VARCHAR(100) NOT NULL, ");
 			queryBuilder.Append("ContainerId BIGINT(20) NOT NULL, ");
 			queryBuilder.Append("Value " + sqlType + " NULL, ");
 			queryBuilder.Append("INDEX ContainerType, ");
