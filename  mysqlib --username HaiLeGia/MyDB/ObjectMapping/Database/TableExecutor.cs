@@ -103,13 +103,13 @@ namespace ObjectMapping.Database
 				queryBuilder.Append("CREATE TABLE IF NOT EXISTS " + tableName + "(");
 				queryBuilder.Append("Id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,");
 				queryBuilder.Append(relationInfo.OriginalKey + " BIGINT(20) NOT NULL, ");
-				queryBuilder.Append("ADD FOREIGN KEY (" + relationInfo.OriginalKey + ") REFERENCES " + originalTable +
+				queryBuilder.Append(" FOREIGN KEY (" + relationInfo.OriginalKey + ") REFERENCES " + originalTable +
 				                    " (Id) ON DELETE CASCADE, ");
 				queryBuilder.Append(relationInfo.PartnerKey + " BIGINT(20) NOT NULL, ");
-				queryBuilder.Append("ADD FOREIGN KEY (" + relationInfo.PartnerKey + ") REFERENCES " + partnerTable +
+				queryBuilder.Append(" FOREIGN KEY (" + relationInfo.PartnerKey + ") REFERENCES " + partnerTable +
 				                    " (Id) ON DELETE CASCADE, ");
-				queryBuilder.Append("ADD INDEX (" + relationInfo.OriginalKey + "), ");
-				queryBuilder.Append("ADD INDEX (" + relationInfo.PartnerKey + ")");
+				queryBuilder.Append(" INDEX (" + relationInfo.OriginalKey + "), ");
+				queryBuilder.Append(" INDEX (" + relationInfo.PartnerKey + ")");
 				queryBuilder.Append(")");
 			}
 			using (var connection = connectionManager.GetUpdateConnection())

@@ -9,58 +9,66 @@ using ObjectMapping.Database;
 
 namespace Persistents
 {
-	[Persistent]
-	public class TestObject : IDbObject
-	{
-		public void Serialize(BinaryWriter writer, IDictionary<object, int> objectGraph, int index)
-		{
-			throw new System.NotImplementedException();
-		}
+//	[Persistent]
+//	public class TestObject : IDbObject
+//	{
+//		private IList<TestObjectHolder> objectHolder;
+//
+////		[ManyToManyRelation(OriginalColumn = "TestObjectKey", RelationTable = "Relation_TestObjectHolder_TestObject", OtherPartner = "TestObjectHolderKey")]
+////		public IList<TestObjectHolder> ObjectHolder
+////		{
+////			get { return objectHolder; }
+////			set { objectHolder = value; }
+////		}
+//		public void Serialize(BinaryWriter writer, IDictionary<object, int> objectGraph, int index)
+//		{
+//			throw new System.NotImplementedException();
+//		}
+//
+//		public void Deserialize(BinaryReader reader, IDictionary<int, object> objectGraph)
+//		{
+//			throw new System.NotImplementedException();
+//		}
+//
+//		public long Id
+//		{
+//			get { throw new System.NotImplementedException(); }
+//			set { throw new System.NotImplementedException(); }
+//		}
+//		[IgnorePersistent]
+//		public ClassMetaData Metadata
+//		{
+//			get { throw new System.NotImplementedException(); }
+//			set { throw new System.NotImplementedException(); }
+//		}
+//
+//		public void ReadPrimitive(DbDataReader reader)
+//		{
+//			throw new System.NotImplementedException();
+//		}
+//
+//		public void ReadObject(DbDataReader reader, string propetyName)
+//		{
+//			throw new System.NotImplementedException();
+//		}
+//
+//		public void ReadObject(IList<object> otherPrimValues, string propertyName, QueryExecutor executor)
+//		{
+//			throw new System.NotImplementedException();
+//		}
+//
+//		public void ReadList(DbDataReader reader, string propertyName)
+//		{
+//			throw new System.NotImplementedException();
+//		}
+//
+//		public void ReadDict(DbDataReader reader, string propertyName)
+//		{
+//			throw new System.NotImplementedException();
+//		}
+//	}
 
-		public void Deserialize(BinaryReader reader, IDictionary<int, object> objectGraph)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public long Id
-		{
-			get { throw new System.NotImplementedException(); }
-			set { throw new System.NotImplementedException(); }
-		}
-		[IgnorePersistent]
-		public ClassMetaData Metadata
-		{
-			get { throw new System.NotImplementedException(); }
-			set { throw new System.NotImplementedException(); }
-		}
-
-		public void ReadPrimitive(DbDataReader reader)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public void ReadObject(DbDataReader reader, string propetyName)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public void ReadObject(IList<object> otherPrimValues, string propertyName, QueryExecutor executor)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public void ReadList(DbDataReader reader, string propertyName)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public void ReadDict(DbDataReader reader, string propertyName)
-		{
-			throw new System.NotImplementedException();
-		}
-	}
-
-	[Persistent]
+	/*[Persistent]
 	public class TestObjectHolder:IDbObject 
 	{
 		#region Primitive
@@ -260,15 +268,16 @@ namespace Persistents
 		#endregion
 
 		#region list region
-
-		private IList<TestObject> objectHolderListChildren;
-
-		[OneToManyRelation(PartnerKey = "TestObjectHolderKey")]
-		public IList<TestObject> ObjectHolderListChildren
-		{
-			get { return objectHolderListChildren; }
-			set { objectHolderListChildren = value; }
-		}
+		
+//		
+//		private IList<TestObject> objectHolderListChildren;
+//
+//		[ManyToManyRelation(OriginalColumn = "TestObjectHolderKey", RelationTable = "Relation_TestObjectHolder_TestObject", OtherPartner = "TestObjectKey")]
+//		public IList<TestObject> ObjectHolderListChildren
+//		{
+//			get { return objectHolderListChildren; }
+//			set { objectHolderListChildren = value; }
+//		}
 
 //				private IList<string> strList;
 //				private IList<byte> byteList;
@@ -326,8 +335,10 @@ namespace Persistents
 
 		#region object
 
+		
 //		private TestObject testObjectHolderChild;
 //
+//		[OneToOneRelation(PartnerKey = "TestObject_Id")]
 //		public TestObject TestObjectHolderChild
 //		{
 //			get { return testObjectHolderChild; }
@@ -336,6 +347,24 @@ namespace Persistents
 
 		#endregion
 
+
+		private TestObjectHolder objectHolder;
+
+		[OneToOneRelation(PartnerKey = "holder_id")]
+		public TestObjectHolder ObjectHolder
+		{
+			get { return objectHolder; }
+			set { objectHolder = value; }
+		}
+
+//		private IList<TestObjectHolder> objectHolder;
+		//
+		//		[OneToManyRelation(PartnerKey = "testObjectHolderId")]
+		//		public IList<TestObjectHolder> ObjectHolder
+		//		{
+		//			get { return objectHolder; }
+		//			set { objectHolder = value; }
+		//		}
 
 		private long id;
 		public void Serialize(BinaryWriter writer, IDictionary<object, int> objectGraph, int index)
@@ -386,6 +415,7 @@ namespace Persistents
 		{
 			throw new System.NotImplementedException();
 		}
-	}
+	}*/
+
 
 }
