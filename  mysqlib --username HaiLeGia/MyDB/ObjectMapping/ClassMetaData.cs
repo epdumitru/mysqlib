@@ -295,26 +295,29 @@ namespace ObjectMapping
 						mappingInfo.AutoIncrement = true;
 						mappingInfo.NotNull = true;
 					}
-					if (propertyType == typeof(byte) || propertyType == typeof(sbyte)
+					else
+					{
+						if (propertyType == typeof(byte) || propertyType == typeof(sbyte) || propertyType == typeof(bool)
 						|| propertyType == typeof(short) || propertyType == typeof(ushort)
 						|| propertyType == typeof(int) || propertyType == typeof(uint)
 						|| propertyType == typeof(float) || propertyType == typeof(long)
 						|| propertyType == typeof(ulong) || propertyType == typeof(double)
 						|| propertyType == typeof(decimal))
-					{
-						mappingInfo.DefaultValue = 0;
-					}
-					else if (propertyType == typeof(char))
-					{
-						mappingInfo.DefaultValue = '\0';
-					}
-					else if (propertyType == typeof(DateTime))
-					{
-						mappingInfo.DefaultValue = DateTime.MinValue;
-					}
-					else if (propertyType == typeof(string))
-					{
-						mappingInfo.DefaultValue = "";
+						{
+							mappingInfo.DefaultValue = 0;
+						}
+						else if (propertyType == typeof(char))
+						{
+							mappingInfo.DefaultValue = "\'\0\'";
+						}
+						else if (propertyType == typeof(DateTime))
+						{
+							mappingInfo.DefaultValue = "\'0001-01-01 12:00:00\'";
+						}
+						else if (propertyType == typeof(string))
+						{
+							mappingInfo.DefaultValue = "\'\'";
+						}	
 					}
 					var propertyAttributes = propertyInfo.GetCustomAttributes(typeof(PropertyAttribute), true);
 					if (propertyAttributes.Length > 0)
