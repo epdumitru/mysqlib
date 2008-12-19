@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chord", "Chord\Chord.csproj", "{0E9C5D92-F408-4652-AA6A-4BE73F81B6F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NTSock", "..\NTSock\NTSock\NTSock.csproj", "{F2414069-EE58-4075-97C2-4FA802A3177D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "Logger\Logger.csproj", "{BEBCF426-8010-4DF7-91F6-5136D17FE3D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChordClient", "ChordClient\ChordClient.csproj", "{53A84481-3141-4697-941E-A72F612663E0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0E9C5D92-F408-4652-AA6A-4BE73F81B6F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E9C5D92-F408-4652-AA6A-4BE73F81B6F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E9C5D92-F408-4652-AA6A-4BE73F81B6F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E9C5D92-F408-4652-AA6A-4BE73F81B6F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2414069-EE58-4075-97C2-4FA802A3177D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2414069-EE58-4075-97C2-4FA802A3177D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2414069-EE58-4075-97C2-4FA802A3177D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2414069-EE58-4075-97C2-4FA802A3177D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEBCF426-8010-4DF7-91F6-5136D17FE3D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEBCF426-8010-4DF7-91F6-5136D17FE3D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEBCF426-8010-4DF7-91F6-5136D17FE3D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEBCF426-8010-4DF7-91F6-5136D17FE3D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53A84481-3141-4697-941E-A72F612663E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53A84481-3141-4697-941E-A72F612663E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53A84481-3141-4697-941E-A72F612663E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53A84481-3141-4697-941E-A72F612663E0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		VisualSVNWorkingCopyRoot = 
+	EndGlobalSection
+EndGlobal
