@@ -10,118 +10,169 @@ using ObjectMapping.Database;
 namespace Persistents
 {
 	[Persistent]
+	public class TestObject : IDbObject
+	{
+		public void Serialize(BinaryWriter writer, IDictionary<object, int> objectGraph, int index)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void Deserialize(BinaryReader reader, IDictionary<int, object> objectGraph)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public long Id
+		{
+			get { throw new System.NotImplementedException(); }
+			set { throw new System.NotImplementedException(); }
+		}
+		[IgnorePersistent]
+		public ClassMetaData Metadata
+		{
+			get { throw new System.NotImplementedException(); }
+			set { throw new System.NotImplementedException(); }
+		}
+
+		public void ReadPrimitive(DbDataReader reader)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadObject(DbDataReader reader, string propetyName)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadObject(IList<object> otherPrimValues, string propertyName, QueryExecutor executor)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadList(DbDataReader reader, string propertyName)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadDict(DbDataReader reader, string propertyName)
+		{
+			throw new System.NotImplementedException();
+		}
+	}
+
+	[Persistent]
 	public class TestObjectHolder:IDbObject 
 	{
 		#region Primitive
-		private bool bo;
-		private byte by;
-		private sbyte sb;
-		private short sh;
-		private ushort us;
-		private char ch;
-		private int i;
-		private uint ui;
-		private float f;
-		private long lo;
-		private ulong ul;
-		private double d;
-		private decimal de;
-		private DateTime dt;
-		private string str;
-
-		[Property(Indexing = PropertyAttribute.DEFAULT_INDEX)]
-		public bool Bo
-		{
-			get { return bo; }
-			set
-			{
-				bo = value;
-			}
-		}
-
-		public byte By
-		{
-			get { return by; }
-			set { by = value; }
-		}
-
-		public sbyte Sb
-		{
-			get { return sb; }
-			set { sb = value; }
-		}
-
-		public short Sh
-		{
-			get { return sh; }
-			set { sh = value; }
-		}
-
-		public ushort Us
-		{
-			get { return us; }
-			set { us = value; }
-		}
-
-		public char Ch
-		{
-			get { return ch; }
-			set { ch = value; }
-		}
-
-		public int I
-		{
-			get { return i; }
-			set { i = value; }
-		}
-
-		public uint Ui
-		{
-			get { return ui; }
-			set { ui = value; }
-		}
-
-		public float F
-		{
-			get { return f; }
-			set { f = value; }
-		}
-
-		public long Lo
-		{
-			get { return lo; }
-			set { lo = value; }
-		}
-
-		public ulong Ul
-		{
-			get { return ul; }
-			set { ul = value; }
-		}
-
-		public double D
-		{
-			get { return d; }
-			set { d = value; }
-		}
-
-		public decimal De
-		{
-			get { return de; }
-			set { de = value; }
-		}
-
-		public DateTime Dt
-		{
-			get { return dt; }
-			set { dt = value; }
-		}
-
-		public string Str
-		{
-			get { return str; }
-			set { str = value; }
-		}
+//		private bool bo;
+//		private byte by;
+//		private sbyte sb;
+//		private short sh;
+//		private ushort us;
+//		private char ch;
+//		private int i;
+//		private uint ui;
+//		private float f;
+//		private long lo;
+//		private ulong ul;
+//		private double d;
+//		private decimal de;
+//		private DateTime dt;
+//		private string str;
+//
+//		[Property(Indexing = PropertyAttribute.DEFAULT_INDEX)]
+//		public bool Bo
+//		{
+//			get { return bo; }
+//			set
+//			{
+//				bo = value;
+//			}
+//		}
+//
+//		public byte By
+//		{
+//			get { return by; }
+//			set { by = value; }
+//		}
+//
+//		public sbyte Sb
+//		{
+//			get { return sb; }
+//			set { sb = value; }
+//		}
+//
+//		public short Sh
+//		{
+//			get { return sh; }
+//			set { sh = value; }
+//		}
+//
+//		public ushort Us
+//		{
+//			get { return us; }
+//			set { us = value; }
+//		}
+//
+//		public char Ch
+//		{
+//			get { return ch; }
+//			set { ch = value; }
+//		}
+//
+//		public int I
+//		{
+//			get { return i; }
+//			set { i = value; }
+//		}
+//
+//		public uint Ui
+//		{
+//			get { return ui; }
+//			set { ui = value; }
+//		}
+//
+//		public float F
+//		{
+//			get { return f; }
+//			set { f = value; }
+//		}
+//
+//		public long Lo
+//		{
+//			get { return lo; }
+//			set { lo = value; }
+//		}
+//
+//		public ulong Ul
+//		{
+//			get { return ul; }
+//			set { ul = value; }
+//		}
+//
+//		public double D
+//		{
+//			get { return d; }
+//			set { d = value; }
+//		}
+//
+//		public decimal De
+//		{
+//			get { return de; }
+//			set { de = value; }
+//		}
+//
+//		public DateTime Dt
+//		{
+//			get { return dt; }
+//			set { dt = value; }
+//		}
+//
+//		public string Str
+//		{
+//			get { return str; }
+//			set { str = value; }
+//		}
 		#endregion
 
 		#region Array
@@ -134,6 +185,7 @@ namespace Persistents
 //			set { objectHolderChildren = value; }
 //		}
 		
+
 //		private byte[] byteArr;
 //		private sbyte[] sbyteArr;
 //		private bool[] boolArr;
@@ -209,38 +261,38 @@ namespace Persistents
 
 		#region list region
 
-//		private IList<TestObjectHolderChild> objectHolderListChildren;
-//
-//		public IList<TestObjectHolderChild> ObjectHolderListChildren
-//		{
-//			get { return objectHolderListChildren; }
-//			set { objectHolderListChildren = value; }
-//		}
+		private IList<TestObject> objectHolderListChildren;
 
-		//		private IList<string> strList;
-		//		private IList<byte> byteList;
-		//		private IList<int> intList;
-		//		private IList<string> strList;
-		//
+		[OneToManyRelation(PartnerKey = "TestObjectHolderKey")]
+		public IList<TestObject> ObjectHolderListChildren
+		{
+			get { return objectHolderListChildren; }
+			set { objectHolderListChildren = value; }
+		}
 
-		//
-		//		public IList<string> StrList
-		//		{
-		//			get { return strList; }
-		//			set { strList = value; }
-		//		}
-		//
-		//		public IList<byte> ByteList
-		//		{
-		//			get { return byteList; }
-		//			set { byteList = value; }
-		//		}
-		//        
-		//		public IList<int> IntList
-		//		{
-		//			get { return intList; }
-		//			set { intList = value; }
-		//		}
+//				private IList<string> strList;
+//				private IList<byte> byteList;
+//				private IList<int> intList;
+//		
+//				public IList<string> StrList
+//				{
+//					get { return strList; }
+//					set { strList = value; }
+//				}
+//		
+//				public IList<byte> ByteList
+//				{
+//					get { return byteList; }
+//					set { byteList = value; }
+//				}
+//		        
+//				public IList<int> IntList
+//				{
+//					get { return intList; }
+//					set { intList = value; }
+//				}
+		
+
 		#endregion
 
 		#region Dictionary
@@ -274,9 +326,9 @@ namespace Persistents
 
 		#region object
 
-//		private TestObjectHolderChild testObjectHolderChild;
+//		private TestObject testObjectHolderChild;
 //
-//		public TestObjectHolderChild TestObjectHolderChild
+//		public TestObject TestObjectHolderChild
 //		{
 //			get { return testObjectHolderChild; }
 //			set { testObjectHolderChild = value; }
