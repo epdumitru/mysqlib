@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Common;
+using ObjectMapping.Attributes;
 using ObjectSerializer;
 
 namespace ObjectMapping.Database

@@ -135,7 +135,42 @@ namespace ObjectMapping
 	{
 		private PropertyInfo propertyInfo;
 		private string mappingField;
-		
+		private bool notNull = false;
+		private bool autoIncrement = false;
+		private int indexing = PropertyAttribute.NO_INDEX ;
+		private bool unique = false;
+		private object defaultValue = null;
+
+		public bool NotNull
+		{
+			get { return notNull; }
+			set { notNull = value; }
+		}
+
+		public bool AutoIncrement
+		{
+			get { return autoIncrement; }
+			set { autoIncrement = value; }
+		}
+
+		public int Indexing
+		{
+			get { return indexing; }
+			set { indexing = value; }
+		}
+
+		public bool Unique
+		{
+			get { return unique; }
+			set { unique = value; }
+		}
+
+		public object DefaultValue
+		{
+			get { return defaultValue; }
+			set { defaultValue = value; }
+		}
+
 		public PropertyInfo PropertyInfo
 		{
 			get { return propertyInfo; }
@@ -249,25 +284,59 @@ namespace ObjectMapping
 				{
 					continue;
 				}
-				var propertyAttributes = propertyInfo.GetCustomAttributes(typeof(PropertyAttributes), true);
-            	string mappingField = propertyInfo.Name;
-				if (propertyAttributes.Length > 0)
-            	{
-					var propertyAttribute = (PropertyAttribute)propertyAttributes[0];
-					mappingField = string.IsNullOrEmpty(propertyAttribute.MappingColumn)
-												? propertyInfo.Name
-												: propertyAttribute.MappingColumn;
-					if (propertyInfo.Name == "Id")
-					{
-						primaryKey = propertyInfo;
-						mappingPrimaryKey = mappingField;
-					}
-            	}
+				
             	var propertyType = propertyInfo.PropertyType;
 				if (propertyType.IsPrimitive || propertyType == typeof(DateTime) || propertyType == typeof(decimal) || propertyType == typeof(string))
 				{
 					var mappingInfo = new MappingInfo() { PropertyInfo = propertyInfo };
-					mappingInfo.MappingField = mappingField;
+					mappingInfo.MappingField = propertyInfo.Name;
+					if (propertyInfo.Name == "Id")
+					{
+						mappingInfo.AutoIncrement = true;
+						mappingInfo.NotNull = true;
+					}
+					if (propertyType == typeof(byte) || propertyType == typeof(sbyte)
+						|| propertyType == typeof(short) || propertyType == typeof(ushort)
+						|| propertyType == typeof(int) || propertyType == typeof(uint)
+						|| propertyType == typeof(float) || propertyType == typeof(long)
+						|| propertyType == typeof(ulong) || propertyType == typeof(double)
+						|| propertyType == typeof(decimal))
+					{
+						mappingInfo.DefaultValue = 0;
+					}
+					else if (propertyType == typeof(char))
+					{
+						mappingInfo.DefaultValue = '\0';
+					}
+					else if (propertyType == typeof(DateTime))
+					{
+						mappingInfo.DefaultValue = DateTime.MinValue;
+					}
+					else if (propertyType == typeof(string))
+					{
+						mappingInfo.DefaultValue = "";
+					}
+					var propertyAttributes = propertyInfo.GetCustomAttributes(typeof(PropertyAttribute), true);
+					if (propertyAttributes.Length > 0)
+					{
+						var propertyAttribute = (PropertyAttribute)propertyAttributes[0];
+						mappingInfo.MappingField = string.IsNullOrEmpty(propertyAttribute.MappingColumn)
+													? propertyInfo.Name
+													: propertyAttribute.MappingColumn;
+						if (propertyInfo.Name == "Id")
+						{
+							primaryKey = propertyInfo;
+							mappingPrimaryKey = mappingInfo.MappingField;
+						}
+						mappingInfo.NotNull = propertyAttribute.NotNull;
+						mappingInfo.AutoIncrement = propertyAttribute.AutoIncrement;
+						if ( propertyAttribute.DefaultValue != null)
+						{
+							mappingInfo.DefaultValue = propertyAttribute.DefaultValue;
+						}
+						mappingInfo.Indexing = propertyAttribute.Indexing;
+						mappingInfo.Unique = propertyAttribute.Unique;
+					}
 					properties.Add(propertyInfo.Name, mappingInfo);	
 				}
 				else if (propertyType.IsGenericType)

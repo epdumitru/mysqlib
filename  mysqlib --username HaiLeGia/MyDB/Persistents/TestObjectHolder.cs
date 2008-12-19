@@ -13,114 +13,115 @@ namespace Persistents
 	public class TestObjectHolder:IDbObject 
 	{
 		#region Primitive
-//		private bool bo;
-//		private byte by;
-//		private sbyte sb;
-//		private short sh;
-//		private ushort us;
-//		private char ch;
-//		private int i;
-//		private uint ui;
-//		private float f;
-//		private long lo;
-//		private ulong ul;
-//		private double d;
-//		private decimal de;
-//		private DateTime dt;
-//		private string str;
-//
-//		public bool Bo
-//		{
-//			get { return bo; }
-//			set
-//			{
-//				bo = value;
-//			}
-//		}
-//
-//		public byte By
-//		{
-//			get { return by; }
-//			set { by = value; }
-//		}
-//
-//		public sbyte Sb
-//		{
-//			get { return sb; }
-//			set { sb = value; }
-//		}
-//
-//		public short Sh
-//		{
-//			get { return sh; }
-//			set { sh = value; }
-//		}
-//
-//		public ushort Us
-//		{
-//			get { return us; }
-//			set { us = value; }
-//		}
-//
-//		public char Ch
-//		{
-//			get { return ch; }
-//			set { ch = value; }
-//		}
-//
-//		public int I
-//		{
-//			get { return i; }
-//			set { i = value; }
-//		}
-//
-//		public uint Ui
-//		{
-//			get { return ui; }
-//			set { ui = value; }
-//		}
-//
-//		public float F
-//		{
-//			get { return f; }
-//			set { f = value; }
-//		}
-//
-//		public long Lo
-//		{
-//			get { return lo; }
-//			set { lo = value; }
-//		}
-//
-//		public ulong Ul
-//		{
-//			get { return ul; }
-//			set { ul = value; }
-//		}
-//
-//		public double D
-//		{
-//			get { return d; }
-//			set { d = value; }
-//		}
-//
-//		public decimal De
-//		{
-//			get { return de; }
-//			set { de = value; }
-//		}
-//
-//		public DateTime Dt
-//		{
-//			get { return dt; }
-//			set { dt = value; }
-//		}
-//
-//		public string Str
-//		{
-//			get { return str; }
-//			set { str = value; }
-//		}
+		private bool bo;
+		private byte by;
+		private sbyte sb;
+		private short sh;
+		private ushort us;
+		private char ch;
+		private int i;
+		private uint ui;
+		private float f;
+		private long lo;
+		private ulong ul;
+		private double d;
+		private decimal de;
+		private DateTime dt;
+		private string str;
+
+		[Property(Indexing = PropertyAttribute.DEFAULT_INDEX)]
+		public bool Bo
+		{
+			get { return bo; }
+			set
+			{
+				bo = value;
+			}
+		}
+
+		public byte By
+		{
+			get { return by; }
+			set { by = value; }
+		}
+
+		public sbyte Sb
+		{
+			get { return sb; }
+			set { sb = value; }
+		}
+
+		public short Sh
+		{
+			get { return sh; }
+			set { sh = value; }
+		}
+
+		public ushort Us
+		{
+			get { return us; }
+			set { us = value; }
+		}
+
+		public char Ch
+		{
+			get { return ch; }
+			set { ch = value; }
+		}
+
+		public int I
+		{
+			get { return i; }
+			set { i = value; }
+		}
+
+		public uint Ui
+		{
+			get { return ui; }
+			set { ui = value; }
+		}
+
+		public float F
+		{
+			get { return f; }
+			set { f = value; }
+		}
+
+		public long Lo
+		{
+			get { return lo; }
+			set { lo = value; }
+		}
+
+		public ulong Ul
+		{
+			get { return ul; }
+			set { ul = value; }
+		}
+
+		public double D
+		{
+			get { return d; }
+			set { d = value; }
+		}
+
+		public decimal De
+		{
+			get { return de; }
+			set { de = value; }
+		}
+
+		public DateTime Dt
+		{
+			get { return dt; }
+			set { dt = value; }
+		}
+
+		public string Str
+		{
+			get { return str; }
+			set { str = value; }
+		}
 		#endregion
 
 		#region Array
@@ -208,13 +209,13 @@ namespace Persistents
 
 		#region list region
 
-		private IList<TestObjectHolderChild> objectHolderListChildren;
-
-		public IList<TestObjectHolderChild> ObjectHolderListChildren
-		{
-			get { return objectHolderListChildren; }
-			set { objectHolderListChildren = value; }
-		}
+//		private IList<TestObjectHolderChild> objectHolderListChildren;
+//
+//		public IList<TestObjectHolderChild> ObjectHolderListChildren
+//		{
+//			get { return objectHolderListChildren; }
+//			set { objectHolderListChildren = value; }
+//		}
 
 		//		private IList<string> strList;
 		//		private IList<byte> byteList;
@@ -301,11 +302,13 @@ namespace Persistents
 			set { id = value; }
 		}
 
+		[IgnorePersistent]
 		public ClassMetaData Metadata
 		{
 			get { throw new System.NotImplementedException(); }
 			set { throw new System.NotImplementedException(); }
 		}
+
 
 		public void ReadPrimitive(DbDataReader reader)
 		{
@@ -333,17 +336,4 @@ namespace Persistents
 		}
 	}
 
-	[Persistent]
-	public class TestObjectHolderChild : TestObjectHolder
-	{
-		private string d;
-		public string D
-		{
-			get { return d; }
-			set
-			{
-				d = value;
-			}
-		}		 
-	}
 }

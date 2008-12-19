@@ -35,37 +35,33 @@ namespace ObjectMapping.Database
 			{
 				var mappingInfo = pair.Value;
 				var propertyInfo = mappingInfo.PropertyInfo;
-				var propertyAttr = (PropertyAttribute) propertyInfo.GetCustomAttributes(typeof (PropertyAttribute), true)[0];
 				var columnType = GetType(propertyInfo);
 				var columnName = mappingInfo.MappingField;
-				createDefinitionBuilder.Append(columnName + " " + columnType);
-				if (propertyAttr.NotNull)
+				createDefinitionBuilder.Append("`" + columnName + "`" + " " + columnType);
+				if (mappingInfo.NotNull)
 				{
 					createDefinitionBuilder.Append(" NOT NULL");
 				}
-				if (propertyAttr.DefaultValue != null)
+				if (mappingInfo.DefaultValue != null)
 				{
-					createDefinitionBuilder.Append(" DEFAULT " + propertyAttr.DefaultValue);
+					createDefinitionBuilder.Append(" DEFAULT " + mappingInfo.DefaultValue);
 				}
-				if (propertyAttr.AutoIncrement)
+				if (mappingInfo.AutoIncrement)
 				{
 					createDefinitionBuilder.Append(" AUTO_INCREMENT");
 				}
-				if (propertyAttr.PrimaryKey)
-				{
-					createDefinitionBuilder.Append(" PRIMARY KEY");
-				}
-				else if (propertyAttr.Unique)
+				if (propertyInfo.Name != "Id" && mappingInfo.Unique)
 				{
 					createDefinitionBuilder.Append(" UNIQUE");
 				}
 				createDefinitionBuilder.Append(", ");
-				if (propertyAttr.Indexing != PropertyAttribute.NO_INDEX)
+				if (mappingInfo.Indexing != PropertyAttribute.NO_INDEX)
 				{
-					createDefinitionBuilder.Append("INDEX " + columnName + ", ");
+					createDefinitionBuilder.Append("INDEX (`" + columnName + "`), ");
 				}
 			}
-			var createDefinitionBuilderStr = createDefinitionBuilder.ToString(0, createDefinitionBuilder.Length - 1);
+			createDefinitionBuilder.Append(" PRIMARY KEY (Id) ");
+			var createDefinitionBuilderStr = createDefinitionBuilder.ToString();
 			queryBuilder.Append(createDefinitionBuilderStr + ")");
 			using (var connection = connectionManager.GetUpdateConnection())
 			{
@@ -220,7 +216,7 @@ namespace ObjectMapping.Database
 				}
 				else
 				{
-					strtype = "varchar(255)";
+					strtype = "VARCHAR(255)";
 				}
 				return strtype;
 			}
@@ -233,61 +229,61 @@ namespace ObjectMapping.Database
 			{
 				if (type == typeof(Char))
 				{
-					return "varchar(1)";
+					return "CHAR(1)";
 				}
 				else if (type == typeof(Int32))
 				{
-					return "integer";
+					return "INTEGER";
 				}
 				else if (type == typeof(Int16))
 				{
-					return "tinyInt";
+					return "MEDIUMINT";
 				}
 				else if (type == typeof(Int64))
 				{
-					return "bigInt";
+					return "BIGINT(20)";
 				}
 				else if (type == typeof(UInt32))
 				{
-					return "integer unsigned default '0'";
+					return "INTEGER UNSIGNED";
 				}
 				else if (type == typeof(UInt16))
 				{
-					return "tinyInt unsigned default '0'";
+					return "MEDIUMINT UNSIGNED";
 				}
 				else if (type == typeof(UInt64))
 				{
-					return "bigInt unsigned default '0'";
+					return "BIGINT(20) UNSIGNED";
 				}
 				else if (type == typeof(Byte[]))
 				{
-					return "blob";
+					return "BLOB";
 				}
 				else if (type == typeof(Byte))
 				{
-					return "tinyInt(127)";
+					return "TINYINT(127)";
 				}
 				else if (type == typeof(SByte))
 				{
-					return "tinyInt(127) unsigned default '0'";
+					return "TINYINT(127) unsigned";
 				}
 				else if (type == typeof(Boolean))
 				{
-					return "tinyInt(1)";
+					return "TINYINT(1)";
 				}
 				else if (type == typeof(Single))
 				{
-					return "float";
+					return "FLOAT";
 				}
 				return type.Name;
 			}
 			else if (type == typeof(DateTime))
 			{
-				return "dateTime";
+				return "DATETIME";
 			}
 			else if (type == typeof(Decimal))
 			{
-				return "decimal";
+				return "DECIMAL";
 			}
 			return null;
 		}
@@ -297,12 +293,12 @@ namespace ObjectMapping.Database
 			switch (attribute.Type)
 			{
 				case StringAttribute.UNLIMITED_STRING:
-					return "text";
+					return "TEXT";
 				case StringAttribute.LIMIT_STRING:
 					int n = attribute.NumberOfChar;
-					return String.Format("varchar({0})", n);
+					return String.Format("VARCHAR({0})", n);
 				default:
-					return "varchar (255)";
+					return "VARCHAR (255)";
 			}
 		}
 	}
