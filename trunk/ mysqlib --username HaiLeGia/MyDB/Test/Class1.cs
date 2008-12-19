@@ -58,6 +58,7 @@ namespace Test
 		{
 		    var asm = typeof (TestObjectHolder).Assembly;
             ClassMetaDataManager.Instace.Register(asm);
+			Console.WriteLine("Done");
 //			var formatter1 = new BinaryFormatter();
 //			TestObject2 testObject = new TestObject2();
 //			Stopwatch watch = new Stopwatch();

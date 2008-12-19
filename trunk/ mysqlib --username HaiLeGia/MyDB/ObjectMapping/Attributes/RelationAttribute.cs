@@ -5,13 +5,7 @@ namespace ObjectMapping.Attributes
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
     public abstract class RelationAttribute : Attribute
     {
-    	private int relationKind;
-
-    	public int RelationKind
-    	{
-    		get { return relationKind; }
-    		set { relationKind = value; }
-    	}
+    	
     }
 
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
