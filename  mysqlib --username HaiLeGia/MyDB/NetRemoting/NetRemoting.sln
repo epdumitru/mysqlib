@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetRemoting", "NetRemoting\NetRemoting.csproj", "{C17D3B59-60F6-4A29-8B0B-86CF5AE807A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetRemotingServer", "NetRemotingServer\NetRemotingServer.csproj", "{81EED62D-3F5A-48D8-8911-1152ACEFB6BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetRemotingClient", "NetRemotingClient\NetRemotingClient.csproj", "{3F15559F-558F-422A-80C7-CEC8A67C0A36}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C17D3B59-60F6-4A29-8B0B-86CF5AE807A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C17D3B59-60F6-4A29-8B0B-86CF5AE807A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C17D3B59-60F6-4A29-8B0B-86CF5AE807A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C17D3B59-60F6-4A29-8B0B-86CF5AE807A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81EED62D-3F5A-48D8-8911-1152ACEFB6BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81EED62D-3F5A-48D8-8911-1152ACEFB6BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81EED62D-3F5A-48D8-8911-1152ACEFB6BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81EED62D-3F5A-48D8-8911-1152ACEFB6BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F15559F-558F-422A-80C7-CEC8A67C0A36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F15559F-558F-422A-80C7-CEC8A67C0A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F15559F-558F-422A-80C7-CEC8A67C0A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F15559F-558F-422A-80C7-CEC8A67C0A36}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
