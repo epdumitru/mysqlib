@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using DBCache.Core;
+using ObjectMapping;
+using ObjectMapping.Attributes;
+using ObjectMapping.Database;
 
 namespace Persistents
 {
-	[Serializable]
-	public class TestObjectHolder
+	[Persistent]
+	public class TestObjectHolder:IDbObject 
 	{
 		#region Primitive
 //		private bool bo;
@@ -279,9 +283,57 @@ namespace Persistents
 
 		#endregion
 
+
+		private long id;
+		public void Serialize(BinaryWriter writer, IDictionary<object, int> objectGraph, int index)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void Deserialize(BinaryReader reader, IDictionary<int, object> objectGraph)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public long Id
+		{
+			get { return id; }
+			set { id = value; }
+		}
+
+		public ClassMetaData Metadata
+		{
+			get { throw new System.NotImplementedException(); }
+			set { throw new System.NotImplementedException(); }
+		}
+
+		public void ReadPrimitive(DbDataReader reader)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadObject(DbDataReader reader, string propetyName)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadObject(IList<object> otherPrimValues, string propertyName, QueryExecutor executor)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadList(DbDataReader reader, string propertyName)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadDict(DbDataReader reader, string propertyName)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 
-	[Serializable]
+	[Persistent]
 	public class TestObjectHolderChild : TestObjectHolder
 	{
 		private string d;

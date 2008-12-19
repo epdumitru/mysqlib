@@ -250,26 +250,24 @@ namespace ObjectMapping
 					continue;
 				}
 				var propertyAttributes = propertyInfo.GetCustomAttributes(typeof(PropertyAttributes), true);
-            	var propertyAttribute = (PropertyAttribute) propertyAttributes[0];
-				if (propertyAttribute.PrimaryKey)
-				{
-					primaryKey = propertyInfo;
-					mappingPrimaryKey = string.IsNullOrEmpty(propertyAttribute.MappingColumn)
-					                    	? propertyInfo.Name
-					                    	: propertyAttribute.MappingColumn;
-				}
+            	string mappingField = propertyInfo.Name;
+				if (propertyAttributes.Length > 0)
+            	{
+					var propertyAttribute = (PropertyAttribute)propertyAttributes[0];
+					mappingField = string.IsNullOrEmpty(propertyAttribute.MappingColumn)
+												? propertyInfo.Name
+												: propertyAttribute.MappingColumn;
+					if (propertyInfo.Name == "Id")
+					{
+						primaryKey = propertyInfo;
+						mappingPrimaryKey = mappingField;
+					}
+            	}
             	var propertyType = propertyInfo.PropertyType;
 				if (propertyType.IsPrimitive || propertyType == typeof(DateTime) || propertyType == typeof(decimal) || propertyType == typeof(string))
 				{
 					var mappingInfo = new MappingInfo() { PropertyInfo = propertyInfo };
-					if (string.IsNullOrEmpty(propertyAttribute.MappingColumn))
-					{
-						mappingInfo.MappingField = propertyInfo.Name;
-					}
-					else
-					{
-						mappingInfo.MappingField = propertyAttribute.MappingColumn;
-					}
+					mappingInfo.MappingField = mappingField;
 					properties.Add(propertyInfo.Name, mappingInfo);	
 				}
 				else if (propertyType.IsGenericType)
