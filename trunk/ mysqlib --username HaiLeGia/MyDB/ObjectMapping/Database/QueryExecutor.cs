@@ -74,7 +74,7 @@ namespace ObjectMapping.Database
 
 				if (mappingTable != null)
 				{
-					var sqlQuery = string.Format("SELECT * FROM {0} WHERE {1} = {2}", mappingTable, relationInfo.OtherPartner, dbObject.GetPrimaryValue());
+					var sqlQuery = string.Format("SELECT * FROM {0} WHERE {1} = {2}", mappingTable, relationInfo.PartnerKey, dbObject.Id);
 					using (var connection = connectionManager.GetReadConnection())
 					{
 						var command = connection.CreateCommand();
@@ -93,7 +93,7 @@ namespace ObjectMapping.Database
 							case RelationInfo.RELATION_N_N:
 								reader = command.ExecuteReader();
 								var listObject = new List<object>();
-								int ordinal = reader.GetOrdinal(relationInfo.OtherPartner);
+								int ordinal = reader.GetOrdinal(relationInfo.PartnerKey);
 								while (reader.Read())
 								{
 									listObject.Add(reader.GetValue(ordinal));

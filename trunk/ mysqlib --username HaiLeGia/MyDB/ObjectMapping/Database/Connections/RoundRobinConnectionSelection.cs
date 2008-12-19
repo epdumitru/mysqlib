@@ -11,7 +11,13 @@ namespace ObjectMapping.Database.Connections
 		private IList<ConnectionInfo> infors;
 		private int index;
 
-		public ConnectionInfo GetConnectionInfo()
+	    public IList<ConnectionInfo> Infors
+	    {
+	        get { return infors; }
+	        set { infors = value; }
+	    }
+
+	    public ConnectionInfo GetConnectionInfo()
 		{
 			return infors[Interlocked.Increment(ref index)%infors.Count];
 		}

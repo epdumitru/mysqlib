@@ -17,24 +17,24 @@ namespace ObjectMapping.Attributes
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
 	public class OneToOneRelationAttribute : RelationAttribute
 	{
-		private string otherPartner;
+		private string partnerKey;
 
-		public string OtherPartner
+		public string PartnerKey
 		{
-			get { return otherPartner; }
-			set { otherPartner = value; }
+			get { return partnerKey; }
+			set { partnerKey = value; }
 		}
 	}
 
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
 	public class OneToManyRelationAttribute : RelationAttribute
 	{
-		private string otherPartner;
+		private string partnerKey;
 
-		public string OtherPartner
+		public string PartnerKey
 		{
-			get { return otherPartner; }
-			set { otherPartner = value; }
+			get { return partnerKey; }
+			set { partnerKey = value; }
 		}
 	}
 

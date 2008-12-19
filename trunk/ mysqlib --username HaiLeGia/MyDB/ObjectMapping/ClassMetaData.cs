@@ -30,7 +30,8 @@ namespace ObjectMapping
 			set { valueType = value; }
 		}
 	}
-	public class GenericListInfo
+	
+    public class GenericListInfo
 	{
 		private Type elementType;
 		private PropertyInfo propertyInfo;
@@ -47,7 +48,8 @@ namespace ObjectMapping
 			set { elementType = value; }
 		}
 	}
-	public class RelationInfo
+	
+    public class RelationInfo
 	{
 		public const int RELATION_1_1 = 0;
 		public const int RELATION_1_N = 1;
@@ -56,8 +58,8 @@ namespace ObjectMapping
 		private int relationKind;
 		private ClassMetaData originalMetadata;
 		private ClassMetaData partnerMetadata;
-		private string originalType;
-		private string otherPartner;
+		private string originalKey;
+		private string partnerKey;
 		private string mappingTable;
 		private PropertyInfo propertyInfo;
 
@@ -72,7 +74,7 @@ namespace ObjectMapping
 				if (relationAttr is OneToOneRelationAttribute)
 				{
 					relationKind = RELATION_1_1;
-					otherPartner = ((OneToOneRelationAttribute) relationAttr).OtherPartner;
+					partnerKey = ((OneToOneRelationAttribute) relationAttr).PartnerKey;
 					partnerMetadata = ClassMetaDataManager.Instace.GetClassMetaData(propertyInfo.PropertyType);
 					mappingTable = partnerMetadata.MappingTable;
 					
@@ -80,7 +82,7 @@ namespace ObjectMapping
 				else if (relationAttr is OneToManyRelationAttribute)
 				{
 					relationKind = RELATION_1_N;
-					otherPartner = ((OneToManyRelationAttribute)relationAttr).OtherPartner;
+					partnerKey = ((OneToManyRelationAttribute)relationAttr).PartnerKey;
 					partnerMetadata = ClassMetaDataManager.Instace.GetClassMetaData(propertyInfo.PropertyType.GetGenericArguments()[0]);
 					mappingTable = partnerMetadata.MappingTable;
 				}
@@ -89,8 +91,8 @@ namespace ObjectMapping
 					relationKind = RELATION_N_N;
 					var attr = (ManyToManyRelationAttribute) relationAttr;
 					mappingTable = attr.RelationTable;
-					originalType = attr.OriginalColumn;
-					otherPartner = attr.OtherPartner;
+					originalKey = attr.OriginalColumn;
+					partnerKey = attr.OtherPartner;
 					partnerMetadata = ClassMetaDataManager.Instace.GetClassMetaData(propertyInfo.PropertyType.GetGenericArguments()[0]);
 				}
 			}
@@ -106,14 +108,14 @@ namespace ObjectMapping
 			get { return mappingTable; }
 		}
 
-		public string OriginalType
+		public string OriginalKey
 		{
-			get { return originalType; }
+			get { return originalKey; }
 		}
 
-		public string OtherPartner
+		public string PartnerKey
 		{
-			get { return otherPartner; }
+			get { return partnerKey; }
 		}
 
 		public ClassMetaData OriginalMetadata

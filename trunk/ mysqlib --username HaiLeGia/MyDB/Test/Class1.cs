@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using ObjectMapping;
+using Persistents;
 using BinaryFormatter=ObjectSerializer.BinaryFormatter;
 
 
@@ -53,17 +56,19 @@ namespace Test
 		}
 		public static void Main(string[] args)
 		{
-			var formatter1 = new BinaryFormatter();
-			TestObject2 testObject = new TestObject2();
-			Stopwatch watch = new Stopwatch();
-			watch.Start();
-			byte[] arr = formatter1.Serialize(testObject); ;
-			Console.WriteLine(arr.Length);
-			using (var stream = new MemoryStream(arr))
-			{
-				var object2 = formatter1.Deserialize<TestObject2>(stream);
-				Console.WriteLine(object2.Name);
-			}
+		    var asm = typeof (TestObjectHolder).Assembly;
+            ClassMetaDataManager.Instace.Register(asm);
+//			var formatter1 = new BinaryFormatter();
+//			TestObject2 testObject = new TestObject2();
+//			Stopwatch watch = new Stopwatch();
+//			watch.Start();
+//			byte[] arr = formatter1.Serialize(testObject); ;
+//			Console.WriteLine(arr.Length);
+//			using (var stream = new MemoryStream(arr))
+//			{
+//				var object2 = formatter1.Deserialize<TestObject2>(stream);
+//				Console.WriteLine(object2.Name);
+//			}
 			//			var originalAsm = typeof(Persistents.TestObjectHolder).Assembly;
 			//			SerializableTypeFactory.CreateSerializableAssembly(originalAsm);
 			//			Create object

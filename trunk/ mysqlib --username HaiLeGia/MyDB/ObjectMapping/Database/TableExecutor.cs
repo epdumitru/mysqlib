@@ -95,8 +95,8 @@ namespace ObjectMapping.Database
 			{
 				var originalTable = relationInfo.OriginalMetadata.MappingTable;
 				queryBuilder.Append("ALTER TABLE " + tableName + " ");
-				queryBuilder.Append("ADD COLUMN " + relationInfo.OtherPartner + " BIGINT(20) NOT NULL REFERENCES " + originalTable + " Id ON DELETE = CASCADE, ");
-				queryBuilder.Append("ADD INDEX " + relationInfo.OtherPartner);
+				queryBuilder.Append("ADD COLUMN " + relationInfo.PartnerKey + " BIGINT(20) NOT NULL REFERENCES " + originalTable + " Id ON DELETE = CASCADE, ");
+				queryBuilder.Append("ADD INDEX " + relationInfo.PartnerKey);
 			}
 			else  if (relationInfo.RelationKind == RelationInfo.RELATION_N_N)
 			{
@@ -104,10 +104,10 @@ namespace ObjectMapping.Database
 				var partnerTable = relationInfo.PartnerMetadata.MappingTable;
 				queryBuilder.Append("CREATE TABLE IF NOT EXISTS " + tableName + "(");
 				queryBuilder.Append("Id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,");
-				queryBuilder.Append(relationInfo.OriginalType + " BIGINT(20) NOT NULL REFERENCES " + originalTable + " Id ON DELETE = CASCADE, ");
-				queryBuilder.Append(relationInfo.OtherPartner + " BIGINT(20) NOT NULL REFERENCES " + partnerTable + " Id ON DELETE = CASCADE, ");
-				queryBuilder.Append("INDEX " + relationInfo.OriginalType + ", ");
-				queryBuilder.Append("INDEX " + relationInfo.OtherPartner);
+				queryBuilder.Append(relationInfo.OriginalKey + " BIGINT(20) NOT NULL REFERENCES " + originalTable + " Id ON DELETE = CASCADE, ");
+				queryBuilder.Append(relationInfo.PartnerKey + " BIGINT(20) NOT NULL REFERENCES " + partnerTable + " Id ON DELETE = CASCADE, ");
+				queryBuilder.Append("INDEX " + relationInfo.OriginalKey + ", ");
+				queryBuilder.Append("INDEX " + relationInfo.PartnerKey);
 				queryBuilder.Append(")");
 			}
 			using (var connection = connectionManager.GetUpdateConnection())
