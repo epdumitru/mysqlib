@@ -32,7 +32,7 @@ namespace ObjectMapping
 		    var exexutor = new TableExecutor();
 		    var selectionAlgorithm = new RoundRobinConnectionSelection();
 		    var localhostInfor = new ConnectionInfo()
-		                             {DatabaseName = "test", HostName = "127.0.0.1", Username = "root", Password = "master"};
+		                             {DatabaseName = "test", HostName = "127.0.0.1", Username = "root", Password = "ki11men0w"};
 		    var listMaster = new List<ConnectionInfo>() {localhostInfor};
 		    var listSlave = new List<ConnectionInfo>() {localhostInfor};
 		    selectionAlgorithm.Infors = listSlave;
