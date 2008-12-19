@@ -203,7 +203,7 @@ namespace ObjectMapping
                 throw new ArgumentNullException("parameter o can not be null");
             }
             type = o.GetType();
-			Init();	
+        	Init();
         }
 
         public ClassMetaData(Type type)
@@ -213,7 +213,7 @@ namespace ObjectMapping
                 throw new ArgumentNullException("Parameter o cannot be null");
             }
             this.type = type;
-			Init();
+        	Init();
         }
 
         public Dictionary<string, MappingInfo> Properties
@@ -261,14 +261,14 @@ namespace ObjectMapping
     		get { return relationProperties; }
     	}
 
-    	private void Init()
-        {
+		private void Init()
+		{
 			var persistentAttrs = type.GetCustomAttributes(typeof(PersistentAttribute), false);
 			if (persistentAttrs.Length == 0)
 			{
 				throw new ArgumentException("Type is not Persistent");
 			}
-			var persistentAttr = (PersistentAttribute) persistentAttrs[0];
+			var persistentAttr = (PersistentAttribute)persistentAttrs[0];
 			mappingTable = string.IsNullOrEmpty(persistentAttr.MappingTable)
 								? type.Name
 								: persistentAttr.MappingTable;
@@ -276,6 +276,11 @@ namespace ObjectMapping
 			relationProperties = new Dictionary<string, RelationInfo>();
 			listProperties = new Dictionary<string, GenericListInfo>();
 			dictProperties = new Dictionary<string, GenericDictInfo>();
+		}
+
+    	public void Create()
+        {
+			
             var propertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             foreach(var propertyInfo in propertyInfos)
             {
