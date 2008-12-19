@@ -54,7 +54,10 @@ namespace ObjectMapping
 					result = new ClassMetaData(type);
 					metadataMaps.Add(type, result);
 				}
-				catch {}
+				catch (Exception e)
+				{
+					
+				}
 			}
 			return result;
 		}

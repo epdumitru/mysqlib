@@ -18,7 +18,6 @@ namespace ObjectMapping.Attributes
 		private bool notNull;
 		private bool autoIncrement;
 		private int indexing;
-		private bool primaryKey;
 		private bool unique;
 		private object defaultValue;
 		private string mappingColumn;
@@ -28,7 +27,6 @@ namespace ObjectMapping.Attributes
 			notNull = false;
 			autoIncrement = false;
 			indexing = NO_INDEX;
-			primaryKey = false;
 			defaultValue = null;
 			mappingColumn = null;
 			unique = false;
@@ -56,12 +54,6 @@ namespace ObjectMapping.Attributes
 		{
 			get { return indexing; }
 			set { indexing = value; }
-		}
-
-		public bool PrimaryKey
-		{
-			get { return primaryKey; }
-			set { primaryKey = value; }
 		}
 
 		public object DefaultValue
