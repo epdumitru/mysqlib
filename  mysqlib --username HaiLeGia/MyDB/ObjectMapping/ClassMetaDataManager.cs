@@ -7,7 +7,7 @@ using ObjectMapping.MySql.Connections;
 
 namespace ObjectMapping
 {
-	internal class ClassMetaDataManager
+	public class ClassMetaDataManager
 	{
 		private IDictionary<Type, ClassMetaData> metadataMaps;
 		public static ClassMetaDataManager Instace = new ClassMetaDataManager();
@@ -35,6 +35,7 @@ namespace ObjectMapping
 		                             {DatabaseName = "test", HostName = "127.0.0.1", Username = "root", Password = "master"};
 		    var listMaster = new List<ConnectionInfo>() {localhostInfor};
 		    var listSlave = new List<ConnectionInfo>() {localhostInfor};
+		    selectionAlgorithm.Infors = listSlave;
             exexutor.ConnectionManager = new MySqlConnectionManager() {MasterConnectionSelection = selectionAlgorithm, SlaveConnectionSelection = selectionAlgorithm, MasterInfos = listMaster, SlaveInfos = listSlave};
             
             exexutor.CreateTables(dict.Keys);

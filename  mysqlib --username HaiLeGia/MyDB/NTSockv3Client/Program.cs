@@ -14,7 +14,6 @@ namespace NTSockv3Client
 	{
 		public ManualResetEvent waitEventToStart;
 		public ManualResetEvent resetEvent;
-		public MyRemoteServiceProxy proxy;
 		public long totalTime;
 		public void Run()
 		{
@@ -23,7 +22,7 @@ namespace NTSockv3Client
 			watch.Start();
 			for (int i = 0; i < 10000; i++)
 			{
-				proxy.DoIt();
+//				proxy.DoIt();
 			}
 			watch.Stop();
 			totalTime = watch.ElapsedMilliseconds;
@@ -64,14 +63,14 @@ namespace NTSockv3Client
 //			Console.WriteLine("Time to start again: " + now.Ticks);
 			int threadCount = 1;
 			var serviceContainer = new ServiceContainer();
-			var proxy = new MyRemoteServiceProxy(serviceContainer, new SocketPool(threadCount, serviceContainer, "127.0.0.1:11885"));
+//			var proxy = new MyRemoteServiceProxy(serviceContainer, new SocketPool(threadCount, serviceContainer, "127.0.0.1:11885"));
 			var jobs = new Job[threadCount];
 			var threadWaitEvent = new ManualResetEvent(false);
 			var mainWaitEvents = new ManualResetEvent[threadCount];
 			for (var i = 0; i < threadCount; i++)
 			{
 				mainWaitEvents[i] = new ManualResetEvent(false);
-				jobs[i] = new Job() {proxy = proxy, resetEvent = mainWaitEvents[i], waitEventToStart = threadWaitEvent};
+//				jobs[i] = new Job() {proxy = proxy, resetEvent = mainWaitEvents[i], waitEventToStart = threadWaitEvent};
 				var t = new Thread(jobs[i].Run);
 				t.Start();
 			}

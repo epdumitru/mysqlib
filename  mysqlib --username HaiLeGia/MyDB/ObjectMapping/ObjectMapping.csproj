@@ -31,14 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Logger, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\CommonProject\Logger\bin\Debug\Logger.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Data, Version=5.2.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\CommonProject\MySql.Data\Provider\bin\net-2.0\Debug\MySql.Data.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -95,13 +87,20 @@
     <Compile Include="MySql\Connections\MySqlConnectionManager.cs" />
     <Compile Include="Database\Query.cs" />
     <Compile Include="Database\QueryExecutor.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CommonProject\Logger\Logger.csproj">
+      <Project>{BEBCF426-8010-4DF7-91F6-5136D17FE3D5}</Project>
+      <Name>Logger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CommonProject\MySql.Data\Provider\MySql.Data.csproj">
+      <Project>{E9DF5ED1-4CBD-4226-B931-9A51610AC14D}</Project>
+      <Name>MySql.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\CommonProject\ObjectSerializer\ObjectSerializer.csproj">
       <Project>{ADD705FF-3CB8-4583-8FE2-8D0576B47C49}</Project>
       <Name>ObjectSerializer</Name>
