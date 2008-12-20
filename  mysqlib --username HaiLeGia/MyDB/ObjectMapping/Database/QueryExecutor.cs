@@ -104,22 +104,9 @@ namespace ObjectMapping.Database
 					}
 				}	
 			}
-			else if (metaData.ListProperties.ContainsKey(propertyName))
-			{
-				var listInfor = metaData.ListProperties[propertyName];
-
-			}
-			else if (metaData.DictProperties.ContainsKey(propertyName))
-			{
-				
-			}
 			else throw new ArgumentException("Unknown property: " + propertyName);
 		}
 
-		public virtual void LoadGenericField(IDbObject dbObject, string propertyName)
-		{
-			
-		}
 		private static T CreateObject<T>(DbDataReader reader) where T : class 
 		{
 			var type = typeof (T);

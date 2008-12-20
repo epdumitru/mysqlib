@@ -40,7 +40,6 @@ namespace ObjectMapping
             
             exexutor.CreateTables(dict.Keys);
             exexutor.CreateRelation(dict.Keys);
-            exexutor.CreateGenericType(dict.Keys);
         }
 
 		public ClassMetaData GetClassMetaData(Type type)
