@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using ObjectMapping.Attributes;
 using ObjectMapping.Database.Connections;
 
 namespace ObjectMapping.Database
 {
-	public class QueryExecutor
+	public class QueryExecutor : IQueryExecutor
 	{
 		private IConnectionManager connectionManager;
 
@@ -15,39 +17,93 @@ namespace ObjectMapping.Database
 			set { connectionManager = value; }
 		}
 
-		public virtual int ExecutNonQuery(Query query)
+		public virtual int ExecutNonQuery(Query query, IsolationLevel? isolationLevel)
 		{
 			using (var connection = connectionManager.GetUpdateConnection())
 			{
 				var command = connection.CreateCommand();
 				command.CommandText = query.SqlQuery;
-				return command.ExecuteNonQuery();
+				if (isolationLevel != null)
+				{
+					var transaction = connection.BeginTransaction();
+					try
+					{
+						var result = command.ExecuteNonQuery();
+						transaction.Commit();
+						return result;
+					}
+					catch (Exception e)
+					{
+						transaction.Rollback();
+						throw new ApplicationException(e.ToString());
+					}
+				}
+				else
+				{
+					return command.ExecuteNonQuery();
+				}
 			}
 		}
 
-		public virtual IList<T> Select<T>(SelectQuery query) where T : class
+		public virtual IList<T> Select<T>(SelectQuery query, IsolationLevel? isolationLevel) where T : class
 		{
 			using (var connection = connectionManager.GetReadConnection())
 			{
 				var command = connection.CreateCommand();
 				command.CommandText = query.SqlQuery;
-				var reader = command.ExecuteReader();
+				DbDataReader reader;
+				if (isolationLevel != null)
+				{
+					var transaction = connection.BeginTransaction();
+					try
+					{
+						reader = command.ExecuteReader();
+						transaction.Commit();
+					}
+					catch (Exception e)
+					{
+						transaction.Rollback();
+						throw new ApplicationException(e.ToString());
+					}
+				}
+				else
+				{
+					reader = command.ExecuteReader();
+				}
 				return CreateObjects<T>(reader, query.PropertyNames);
 			}
 		}
 
-		public virtual T SelectUnique<T>(SelectQuery query) where T : class
+		public virtual T SelectUnique<T>(SelectQuery query, IsolationLevel? isolationLevel) where T : class
 		{
 			using (var connection = connectionManager.GetReadConnection())
 			{
 				var command = connection.CreateCommand();
 				command.CommandText = query.SqlQuery;
-				var reader = command.ExecuteReader(CommandBehavior.SingleRow);
+				DbDataReader reader;
+				if (isolationLevel != null)
+				{
+					var transaction = connection.BeginTransaction();
+					try
+					{
+						reader = command.ExecuteReader();
+						transaction.Commit();
+					}
+					catch (Exception e)
+					{
+						transaction.Rollback();
+						throw new ApplicationException(e.ToString());
+					}
+				}
+				else
+				{
+					reader = command.ExecuteReader();
+				}
 				return CreateObject<T>(reader, query.PropertyNames);
 			}
 		}
 
-		public virtual T SelectById<T>(long id, params string[] propertyNames) where T : class 
+		public virtual T SelectById<T>(long id, IsolationLevel? isolationLevel, params string[] propertyNames) where T : class 
 		{
 			var type = typeof (T);
 			var metadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
@@ -57,8 +113,113 @@ namespace ObjectMapping.Database
 			{
 				var command = connection.CreateCommand();
 				command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = {2}", mappingTable, mappingPrimKey, id);
-				var reader = command.ExecuteReader(CommandBehavior.SingleRow);
+				DbDataReader reader;
+				if (isolationLevel != null)
+				{
+					var transaction = connection.BeginTransaction();
+					try
+					{
+						reader = command.ExecuteReader(CommandBehavior.SingleRow);
+						transaction.Commit();
+					}
+					catch (Exception e)
+					{
+						transaction.Rollback();
+						throw new ApplicationException(e.ToString());
+					}
+				}
+				else
+				{
+					reader = command.ExecuteReader(CommandBehavior.SingleRow);
+				}
 				return CreateObject<T>(reader, propertyNames);
+			}
+		}
+
+		public int Update(IDbObject dbObject, int updateDepth, IsolationLevel? isolationLevel)
+		{
+			using (var connection = connectionManager.GetUpdateConnection())
+			{
+				var command = connection.CreateCommand();
+				command.CommandText = dbObject.Update(updateDepth);
+				if (isolationLevel != null)
+				{
+					var transaction = connection.BeginTransaction();
+					try
+					{
+						var result = command.ExecuteNonQuery();
+						transaction.Commit();
+						return result;
+					}
+					catch(Exception e)
+					{
+						transaction.Rollback();
+						throw new ApplicationException(e.ToString());
+					}
+				}
+				else
+				{
+					return command.ExecuteNonQuery();
+				}
+			}
+		}
+
+		public int Insert(IDbObject dbObject, IsolationLevel? isolationLevel)
+		{
+			using (var connection = connectionManager.GetUpdateConnection())
+			{
+				var command = connection.CreateCommand();
+				command.CommandText = dbObject.Insert();
+				if (isolationLevel != null)
+				{
+					var transaction = connection.BeginTransaction();
+					try
+					{
+						var result = command.ExecuteNonQuery();
+						transaction.Commit();
+						return result;
+					}
+					catch (Exception e)
+					{
+						transaction.Rollback();
+						throw new ApplicationException(e.ToString());
+					}
+				}
+				else
+				{
+					return command.ExecuteNonQuery();
+				}
+			}
+		}
+
+		public long Count<T>(IsolationLevel? isolationLevel) where T : IDbObject
+		{
+			var type = typeof (T);
+			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
+			var mappingTable = classMetadata.MappingTable;
+			using (var connection = connectionManager.GetUpdateConnection())
+			{
+				var command = connection.CreateCommand();
+				command.CommandText = "SELECT COUNT(Id) FROM " + mappingTable;
+				if (isolationLevel != null)
+				{
+					var transaction = connection.BeginTransaction();
+					try
+					{
+						var result = (long) command.ExecuteScalar();
+						transaction.Commit();
+						return result;
+					}
+					catch (Exception e)
+					{
+						transaction.Rollback();
+						throw new ApplicationException(e.ToString());
+					}
+				}
+				else
+				{
+					return (long) command.ExecuteScalar();
+				}
 			}
 		}
 

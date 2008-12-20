@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\IgnorePersistentAttribute.cs" />
+    <Compile Include="Attributes\IQueryExecutor.cs" />
     <Compile Include="Attributes\PersistentAttribute.cs" />
     <Compile Include="Attributes\PropertyAttribute.cs" />
     <Compile Include="Attributes\RelationAttribute.cs" />
