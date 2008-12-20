@@ -311,6 +311,10 @@ namespace ObjectMapping
 									Unique = false,
 									PropertyInfo = propertyInfo
 								};
+								if (propertyAttribute.MappingColumn != null)
+								{
+									mappingInfo.MappingField = propertyAttribute.MappingColumn;
+								}
 								properties.Add(propertyInfo.Name, mappingInfo);
 								continue;
 							}
