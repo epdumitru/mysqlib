@@ -21,6 +21,7 @@ namespace ObjectMapping.Attributes
 		private bool unique;
 		private object defaultValue;
 		private string mappingColumn;
+		private bool attach;
 
 		public PropertyAttribute()
 		{
@@ -30,6 +31,7 @@ namespace ObjectMapping.Attributes
 			defaultValue = null;
 			mappingColumn = null;
 			unique = false;
+			attach = false;
 		}
 
 		public bool Unique
@@ -66,6 +68,12 @@ namespace ObjectMapping.Attributes
 		{
 			get { return mappingColumn; }
 			set { mappingColumn = value; }
+		}
+
+		public bool Attach
+		{
+			get { return attach; }
+			set { attach = value; }
 		}
 	}
 }
