@@ -417,5 +417,102 @@ namespace Persistents
 		}
 	}*/
 
+	[Persistent]
+	public class ParentObject : IDbObject
+	{
+		private string userName;
+		private string password;
 
+		public string UserName
+		{
+			get { return userName; }
+			set { userName = value; }
+		}
+
+		public string Password
+		{
+			get { return password; }
+			set { password = value; }
+		}
+
+		private IList<ParentObject> parent;
+
+		[OneToManyRelation(PartnerKey = "Id")]
+		public IList<ParentObject> Parent
+		{
+			get { return parent; }
+			set { parent = value; }
+		}
+
+		public void Serialize(BinaryWriter writer, IDictionary<object, int> objectGraph, int index)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void Deserialize(BinaryReader reader, IDictionary<int, object> objectGraph)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		private long id;
+		public long Id
+		{
+			get { return id; }
+			set { id = value; }
+		}
+
+		[IgnorePersistent]
+		public ClassMetaData Metadata
+		{
+			get { throw new System.NotImplementedException(); }
+			set { throw new System.NotImplementedException(); }
+		}
+
+		public void ReadPrimitive(DbDataReader reader)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadObject(DbDataReader reader, string propetyName)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadObject(IList<object> otherPrimValues, string propertyName, QueryExecutor executor)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadList(DbDataReader reader, string propertyName)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ReadDict(DbDataReader reader, string propertyName)
+		{
+			throw new System.NotImplementedException();
+		}
+	}
+
+	[Persistent]
+	public class ChildObject : ParentObject
+	{
+		private string address;
+
+		public string Address
+		{
+			get { return address; }
+			set { address = value; }
+		}
+
+		private IList<ParentObject> parent;
+
+		[OneToManyRelation(PartnerKey = "Id")]
+		public IList<ParentObject> Parent
+		{
+			get { return parent; }
+			set { parent = value; }
+		}
+
+	}
 }

@@ -56,7 +56,7 @@ namespace Test
 		}
 		public static void Main(string[] args)
 		{
-		    var asm = typeof (TestObjectHolder).Assembly;
+		    var asm = typeof (ParentObject).Assembly;
             ClassMetaDataManager.Instace.Register(asm);
 			Console.WriteLine("Done");
 //			var formatter1 = new BinaryFormatter();
