@@ -54,7 +54,21 @@ namespace ObjectMapping.Database
 
 		public virtual string ToSqlString()
 		{
-			StringBuilder str = new StringBuilder("SELECT * FROM " + mappingTable + " ");
+			var str = new StringBuilder("SELECT ");//"* FROM " + mappingTable + " ");
+			if (propertyNames == ALL_PROPS)
+			{
+				str.Append("* ");	
+			}
+			else
+			{
+				for (var i = 0; i < propertyNames.Length; i++)
+				{
+					str.Append(propertyNames + ", ");
+				}
+				var tmpString = str.ToString(0, str.Length - 2);
+				str.Length = 0;
+			}
+			str.Append(" FROM " + mappingTable + " ");
 			if (wherePart != null)
 			{
 				str.Append(wherePart.ToSqlString());
