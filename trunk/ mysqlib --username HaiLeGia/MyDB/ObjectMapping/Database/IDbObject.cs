@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Data.Common;
-using ObjectMapping.Attributes;
 using ObjectSerializer;
 
 namespace ObjectMapping.Database
@@ -9,10 +8,6 @@ namespace ObjectMapping.Database
 	{
 		long Id { get; set; }
 		ClassMetaData Metadata { get; set; }
-		void ReadPrimitive(DbDataReader reader);
-		void ReadObject(DbDataReader reader, string propetyName);
-		void ReadObject(IList<object> otherPrimValues, string propertyName, QueryExecutor executor);
-		void ReadList(DbDataReader reader, string propertyName);
-		void ReadDict(DbDataReader reader, string propertyName);
+		void ReadField(DbDataReader reader, QueryExecutor executor, params string[] propertyNames);
 	}
 }
