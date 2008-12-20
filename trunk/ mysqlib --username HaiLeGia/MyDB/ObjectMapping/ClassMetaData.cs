@@ -71,19 +71,19 @@ namespace ObjectMapping
 				propertyInfo = value;
 				var relationAttrs = propertyInfo.GetCustomAttributes(typeof (RelationAttribute), true);
 				var relationAttr = (RelationAttribute) relationAttrs[0];
+				var propertyType = propertyInfo.PropertyType;
 				if (relationAttr is OneToOneRelationAttribute)
 				{
 					relationKind = RELATION_1_1;
-					partnerKey = ((OneToOneRelationAttribute) relationAttr).PartnerKey;
-					partnerMetadata = ClassMetaDataManager.Instace.GetClassMetaData(propertyInfo.PropertyType);
+					partnerMetadata = ClassMetaDataManager.Instace.GetClassMetaData(propertyType);
+					partnerKey = originalMetadata.Type.Name + ((OneToOneRelationAttribute) relationAttr).PartnerKey;
 					mappingTable = partnerMetadata.MappingTable;
-					
 				}
 				else if (relationAttr is OneToManyRelationAttribute)
 				{
 					relationKind = RELATION_1_N;
-					partnerKey = ((OneToManyRelationAttribute)relationAttr).PartnerKey;
-					partnerMetadata = ClassMetaDataManager.Instace.GetClassMetaData(propertyInfo.PropertyType.GetGenericArguments()[0]);
+					partnerKey = originalMetadata.Type.Name + ((OneToManyRelationAttribute)relationAttr).PartnerKey;
+					partnerMetadata = ClassMetaDataManager.Instace.GetClassMetaData(propertyType.GetGenericArguments()[0]);
 					mappingTable = partnerMetadata.MappingTable;
 				}
 				else if (relationAttr is ManyToManyRelationAttribute)
@@ -93,7 +93,7 @@ namespace ObjectMapping
 					mappingTable = attr.RelationTable;
 					originalKey = attr.OriginalColumn;
 					partnerKey = attr.OtherPartner;
-					partnerMetadata = ClassMetaDataManager.Instace.GetClassMetaData(propertyInfo.PropertyType.GetGenericArguments()[0]);
+					partnerMetadata = ClassMetaDataManager.Instace.GetClassMetaData(propertyType.GetGenericArguments()[0]);
 				}
 			}
 		}
@@ -360,7 +360,7 @@ namespace ObjectMapping
 						}
 						else if (elementType.IsClass)
 						{
-							var relationInfo = new RelationInfo() { PropertyInfo = propertyInfo, OriginalMetadata = this};
+							var relationInfo = new RelationInfo() { OriginalMetadata = this, PropertyInfo = propertyInfo };
 							relationProperties.Add(propertyInfo.Name, relationInfo);
 						}
 					}
@@ -373,7 +373,7 @@ namespace ObjectMapping
 				}
 				else if (propertyType.IsClass)
 				{
-					var relationInfo = new RelationInfo() {PropertyInfo = propertyInfo, OriginalMetadata = this};
+					var relationInfo = new RelationInfo() { OriginalMetadata = this, PropertyInfo = propertyInfo };
 					relationProperties.Add(propertyInfo.Name, relationInfo);
 				}
             }
