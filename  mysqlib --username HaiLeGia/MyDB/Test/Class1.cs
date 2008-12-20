@@ -59,6 +59,10 @@ namespace Test
 		    var asm = typeof (ParentObject).Assembly;
             ClassMetaDataManager.Instace.Register(asm);
 			Console.WriteLine("Done");
+
+			var type = typeof(ParentObject);
+			var test1 = new ParentObject();
+			var test2 = Activator.CreateInstance(type);
 //			var formatter1 = new BinaryFormatter();
 //			TestObject2 testObject = new TestObject2();
 //			Stopwatch watch = new Stopwatch();
