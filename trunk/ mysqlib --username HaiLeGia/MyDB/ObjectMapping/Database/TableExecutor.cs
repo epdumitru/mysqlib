@@ -120,78 +120,6 @@ namespace ObjectMapping.Database
 			}
 		}
 
-		public virtual void CreateGenericType(ICollection<ClassMetaData> metaDatas)
-		{
-            foreach(var metadata in metaDatas)
-            {
-                var listInfos = metadata.ListProperties;
-                foreach (var pair in listInfos)
-                {
-                    CreateTable(pair.Value);
-                }
-                var dictInfos = metadata.DictProperties;
-                foreach (var info in dictInfos)
-                {
-                    CreateTable(info.Value);
-                }
-            }
-		}
-
-		public virtual int CreateTable(GenericDictInfo dictInfo)
-		{
-			var keyType = dictInfo.KeyType;
-			var valueType = dictInfo.ValueType;
-			var sqlKeyType = GetType(keyType);
-			var sqlValueType = GetType(valueType);
-			var tableName = "Dictionary_" + keyType.Name + "_" + valueType.Name;
-			var queryBuilder = new StringBuilder();
-			queryBuilder.Append("CREATE TABLE IF NOT EXISTS " + tableName + "(");
-			queryBuilder.Append("Id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY, ");
-			queryBuilder.Append("ContainerType VARCHAR(256) NOT NULL, ");
-		    queryBuilder.Append("PropertyName VARCHAR(100) NOT NULL, ");
-            queryBuilder.Append("ContainerId BIGINT(20) NOT NULL, ");
-			queryBuilder.Append("`Key` " + sqlKeyType + " NOT NULL, ");
-			queryBuilder.Append("Value " + sqlValueType + " NULL, ");
-			queryBuilder.Append("INDEX (ContainerType), ");
-			queryBuilder.Append("INDEX (PropertyName), ");
-			queryBuilder.Append("INDEX (ContainerId)");
-			queryBuilder.Append(")");
-			using (var connection = connectionManager.GetUpdateConnection())
-			{
-				var command = connection.CreateCommand();
-				command.CommandText = queryBuilder.ToString();
-				return command.ExecuteNonQuery();
-			}
-		}
-
-		public virtual int CreateTable(GenericListInfo listInfo)
-		{
-			var elementType = listInfo.ElementType;
-			var sqlType = GetType(elementType);
-			var tableName = "List_" + elementType.Name;
-			var queryBuilder = new StringBuilder();
-			queryBuilder.Append("CREATE TABLE IF NOT EXISTS " + tableName + "(");
-			queryBuilder.Append("Id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY, ");
-			queryBuilder.Append("ContainerType VARCHAR(256) NOT NULL, ");
-		    queryBuilder.Append("PropertyName VARCHAR(100) NOT NULL, ");
-			queryBuilder.Append("ContainerId BIGINT(20) NOT NULL, ");
-			queryBuilder.Append("Value " + sqlType + " NULL, ");
-			queryBuilder.Append("INDEX (ContainerType), ");
-			queryBuilder.Append("INDEX (PropertyName), ");
-			queryBuilder.Append("INDEX (ContainerId)");
-			if (elementType != typeof(string))
-			{
-				queryBuilder.Append(", INDEX (Value)");
-			}
-			queryBuilder.Append(")");
-			using (var connection = connectionManager.GetUpdateConnection())
-			{
-				var command = connection.CreateCommand();
-				command.CommandText = queryBuilder.ToString();
-				return command.ExecuteNonQuery();
-			}
-		}
-
 		public static  string GetType(Type elementType)
 		{
 			string strtype = ConvertPrimaryType(elementType);
@@ -227,6 +155,19 @@ namespace ObjectMapping.Database
 					strtype = "VARCHAR(255)";
 				}
 				return strtype;
+			}
+			else if (typeP.IsGenericType)
+			{
+				var propertyDefinition = typeP.GetGenericTypeDefinition();
+				if (propertyDefinition == typeof(IList<>) || propertyDefinition == typeof(List<>) || 
+					propertyDefinition == typeof(IDictionary<,>) || propertyDefinition == typeof(Dictionary<,>))
+				{
+					return "BLOB";
+				}
+			}
+			else if (typeP.IsArray)
+			{
+				return "BLOB";
 			}
 			return null;
 		}

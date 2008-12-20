@@ -6,50 +6,7 @@ using ObjectMapping.Database;
 
 namespace ObjectMapping
 {
-	public class GenericDictInfo
-	{
-		private Type keyType;
-		private Type valueType;
-		private PropertyInfo propertyInfo;
-
-		public PropertyInfo PropertyInfo
-		{
-			get { return propertyInfo; }
-			set { propertyInfo = value; }
-		}
-
-		public Type KeyType
-		{
-			get { return keyType; }
-			set { keyType = value; }
-		}
-
-		public Type ValueType
-		{
-			get { return valueType; }
-			set { valueType = value; }
-		}
-	}
-	
-    public class GenericListInfo
-	{
-		private Type elementType;
-		private PropertyInfo propertyInfo;
-
-		public PropertyInfo PropertyInfo
-		{
-			get { return propertyInfo; }
-			set { propertyInfo = value; }
-		}
-
-		public Type ElementType
-		{
-			get { return elementType; }
-			set { elementType = value; }
-		}
-	}
-	
-    public class RelationInfo
+	public class RelationInfo
 	{
 		public const int RELATION_1_1 = 0;
 		public const int RELATION_1_N = 1;
@@ -185,81 +142,69 @@ namespace ObjectMapping
 
 	}
 
-    public class ClassMetaData
-    {
-        private Dictionary<string, MappingInfo> properties;
+	public class ClassMetaData
+	{
+		private Dictionary<string, MappingInfo> properties;
 		private Dictionary<string, RelationInfo> relationProperties;
-    	private Dictionary<string, GenericListInfo> listProperties;
-    	private Dictionary<string, GenericDictInfo> dictProperties;
-    	private PropertyInfo primaryKey;
-    	private string mappingTable;
-    	private string mappingPrimaryKey;
+		private PropertyInfo primaryKey;
+		private string mappingTable;
+		private string mappingPrimaryKey;
 		private Type type;
 
-        public ClassMetaData(object o)
-        {
-            if (o == null)
-            {
-                throw new ArgumentNullException("parameter o can not be null");
-            }
-            type = o.GetType();
-        	Init();
-        }
+		public ClassMetaData(object o)
+		{
+			if (o == null)
+			{
+				throw new ArgumentNullException("parameter o can not be null");
+			}
+			type = o.GetType();
+			Init();
+		}
 
-        public ClassMetaData(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("Parameter o cannot be null");
-            }
-            this.type = type;
-        	Init();
-        }
+		public ClassMetaData(Type type)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException("Parameter o cannot be null");
+			}
+			this.type = type;
+			Init();
+		}
 
-        public Dictionary<string, MappingInfo> Properties
-        {
-            get { return properties; }
-        }
+		public Dictionary<string, MappingInfo> Properties
+		{
+			get { return properties; }
+		}
 
-    	public Dictionary<string, GenericListInfo> ListProperties
-    	{
-    		get { return listProperties; }
-    	}
+		public PropertyInfo PrimaryKey
+		{
+			get { return primaryKey; }
+		}
 
-    	public Dictionary<string, GenericDictInfo> DictProperties
-    	{
-    		get { return dictProperties; }
-    	}
+		public string MappingPrimaryKey
+		{
+			get { return mappingPrimaryKey; }
+		}
 
-    	public PropertyInfo PrimaryKey
-    	{
-    		get { return primaryKey; }
-    	}
-
-    	public string MappingPrimaryKey
-    	{
-    		get { return mappingPrimaryKey; }
-    	}
-
-    	public Type Type
-        {
-            get { return type; }
-        }
+		public Type Type
+		{
+			get { return type; }
+		}
 
 		public IDbObject GetDbObject()
 		{
 			return null;
 		}
 
-    	public string MappingTable
-    	{
-    		get { return mappingTable; }
-    	}
+		public string MappingTable
+		{
+			get { return mappingTable; }
+		}
 
-    	public IDictionary<string, RelationInfo> RelationProperties
-    	{
-    		get { return relationProperties; }
-    	}
+		public IDictionary<string, RelationInfo> RelationProperties
+		{
+			get { return relationProperties; }
+		}
 
 		private void Init()
 		{
@@ -274,23 +219,21 @@ namespace ObjectMapping
 								: persistentAttr.MappingTable;
 			properties = new Dictionary<string, MappingInfo>();
 			relationProperties = new Dictionary<string, RelationInfo>();
-			listProperties = new Dictionary<string, GenericListInfo>();
-			dictProperties = new Dictionary<string, GenericDictInfo>();
 		}
 
-    	public void Create()
-        {
-			
-            var propertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            foreach(var propertyInfo in propertyInfos)
-            {
-            	var ignoreAttributes = propertyInfo.GetCustomAttributes(typeof (IgnorePersistentAttribute), true);
+		public void Create()
+		{
+
+			var propertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+			foreach (var propertyInfo in propertyInfos)
+			{
+				var ignoreAttributes = propertyInfo.GetCustomAttributes(typeof(IgnorePersistentAttribute), true);
 				if (ignoreAttributes.Length > 0)
 				{
 					continue;
 				}
-				
-            	var propertyType = propertyInfo.PropertyType;
+
+				var propertyType = propertyInfo.PropertyType;
 				if (propertyType.IsPrimitive || propertyType == typeof(DateTime) || propertyType == typeof(decimal) || propertyType == typeof(string))
 				{
 					var mappingInfo = new MappingInfo() { PropertyInfo = propertyInfo };
@@ -322,7 +265,7 @@ namespace ObjectMapping
 						else if (propertyType == typeof(string))
 						{
 							mappingInfo.DefaultValue = "\'\'";
-						}	
+						}
 					}
 					var propertyAttributes = propertyInfo.GetCustomAttributes(typeof(PropertyAttribute), true);
 					if (propertyAttributes.Length > 0)
@@ -338,45 +281,74 @@ namespace ObjectMapping
 						}
 						mappingInfo.NotNull = propertyAttribute.NotNull;
 						mappingInfo.AutoIncrement = propertyAttribute.AutoIncrement;
-						if ( propertyAttribute.DefaultValue != null)
+						if (propertyAttribute.DefaultValue != null)
 						{
 							mappingInfo.DefaultValue = propertyAttribute.DefaultValue;
 						}
 						mappingInfo.Indexing = propertyAttribute.Indexing;
 						mappingInfo.Unique = propertyAttribute.Unique;
 					}
-					properties.Add(propertyInfo.Name, mappingInfo);	
+					properties.Add(propertyInfo.Name, mappingInfo);
 				}
 				else if (propertyType.IsGenericType)
 				{
 					var typeDefinition = propertyType.GetGenericTypeDefinition();
-					if (typeDefinition == typeof(IList<>) || typeDefinition == typeof(List<>))
+					if ((typeDefinition == typeof(IList<>) || typeDefinition == typeof(List<>)) && propertyType.GetGenericArguments()[0].IsClass)
 					{
-						var elementType = propertyType.GetGenericArguments()[0];
-						if (elementType.IsPrimitive || elementType == typeof(DateTime) || elementType == typeof(string) || elementType == typeof(decimal))
+						var propertyAttributes = propertyInfo.GetCustomAttributes(typeof(PropertyAttribute), true);
+						if (propertyAttributes.Length > 0)
 						{
-							var listInfo = new GenericListInfo() {ElementType = elementType, PropertyInfo = propertyInfo};
-							listProperties.Add(propertyInfo.Name, listInfo);
+							var propertyAttribute = (PropertyAttribute) propertyAttributes[0];
+							if (propertyAttribute.Attach)
+							{
+								var mappingInfo = new MappingInfo()
+								{
+									AutoIncrement = false,
+									DefaultValue = null,
+									Indexing = PropertyAttribute.NO_INDEX,
+									NotNull = false,
+									MappingField = propertyInfo.Name,
+									Unique = false,
+									PropertyInfo = propertyInfo
+								};
+								properties.Add(propertyInfo.Name, mappingInfo);
+								continue;
+							}
 						}
-						else if (elementType.IsClass)
+						var relationInfo = new RelationInfo() { OriginalMetadata = this, PropertyInfo = propertyInfo };
+						relationProperties.Add(propertyInfo.Name, relationInfo);
+					}
+					else if ((typeDefinition == typeof(IDictionary<,>) || typeDefinition == typeof(Dictionary<,>))
+								|| (typeDefinition == typeof(IList<>) || typeDefinition == typeof(List<>)))
+					{
+						var mappingInfo = new MappingInfo()
+							{
+								AutoIncrement = false,
+								DefaultValue = null,
+								Indexing = PropertyAttribute.NO_INDEX,
+								NotNull = false,
+								MappingField = propertyInfo.Name,
+								Unique = false,
+								PropertyInfo = propertyInfo
+							};
+						properties.Add(propertyInfo.Name, mappingInfo);
+						var propertyAttributes = propertyInfo.GetCustomAttributes(typeof(PropertyAttribute), true);
+						if (propertyAttributes.Length > 0)
 						{
-							var relationInfo = new RelationInfo() { OriginalMetadata = this, PropertyInfo = propertyInfo };
-							relationProperties.Add(propertyInfo.Name, relationInfo);
+							var propertyAttribute = (PropertyAttribute)propertyAttributes[0];
+							if (propertyAttribute.MappingColumn != null)
+							{
+								mappingInfo.MappingField = propertyAttribute.MappingColumn;
+							}
 						}
 					}
-					else if (typeDefinition == typeof(IDictionary<,>) || typeDefinition == typeof(Dictionary<,>))
+					else if (propertyType.IsClass)
 					{
-						var keyType = propertyType.GetGenericArguments()[0];
-						var valueType = propertyType.GetGenericArguments()[1];
-						dictProperties.Add(propertyInfo.Name, new GenericDictInfo() {PropertyInfo = propertyInfo, KeyType = keyType, ValueType = valueType});
+						var relationInfo = new RelationInfo() { OriginalMetadata = this, PropertyInfo = propertyInfo };
+						relationProperties.Add(propertyInfo.Name, relationInfo);
 					}
 				}
-				else if (propertyType.IsClass)
-				{
-					var relationInfo = new RelationInfo() { OriginalMetadata = this, PropertyInfo = propertyInfo };
-					relationProperties.Add(propertyInfo.Name, relationInfo);
-				}
-            }
-        }
-    }
+			}
+		}
+	}
 }

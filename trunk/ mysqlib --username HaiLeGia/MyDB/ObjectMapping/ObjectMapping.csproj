@@ -84,6 +84,7 @@
     <Compile Include="Database\IDbObject.cs" />
     <Compile Include="Database\SelectQuery.cs" />
     <Compile Include="Database\TableExecutor.cs" />
+    <Compile Include="DbObjectFactory.cs" />
     <Compile Include="MySql\Connections\MySqlConnectionManager.cs" />
     <Compile Include="Database\Query.cs" />
     <Compile Include="Database\QueryExecutor.cs" />
