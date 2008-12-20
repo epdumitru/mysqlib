@@ -8,6 +8,6 @@ namespace ObjectMapping.Database
 	{
 		long Id { get; set; }
 		ClassMetaData Metadata { get; set; }
-		void ReadField(DbDataReader reader, QueryExecutor executor, params string[] propertyNames);
+		void ReadFields(DbDataReader reader, params string[] propertyNames);
 	}
 }
