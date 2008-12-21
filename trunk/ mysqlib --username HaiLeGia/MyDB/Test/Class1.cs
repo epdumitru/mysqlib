@@ -18,12 +18,14 @@ namespace Test
 //			dbObjectContainer.Register(typeof(UserData).Assembly);
             
             UserData userData = new UserData();
-		    userData.Username = "abc";
-		    userData.Password = "123";
-            userData.StrArray = new string[]{"1", "2"};
-            
-            
-			dbObjectContainer.QueryExecutor.Insert(userData, null);
+
+            userData.Other  = dbObjectContainer.QueryExecutor.SelectById<UserData>(1, null, new string[] { "Username", "Password", "StrArray" });
+            userData.Username = "abcd";
+            userData.Password = "1234";
+            userData.StrArray = new string[] { "1", "2", "3" };
+             
+		    dbObjectContainer.QueryExecutor.Insert(userData, null);
+//			dbObjectContainer.QueryExecutor.Insert(userData, null);
 
 
 //			var formatter1 = new BinaryFormatter();
@@ -67,7 +69,8 @@ namespace Test
 //						}
 //						watch.Stop();
 //						Console.WriteLine("Execution time: " + watch.ElapsedMilliseconds);
-			Console.ReadKey();
+			
+            Console.ReadKey();
 		}
 	}
 }

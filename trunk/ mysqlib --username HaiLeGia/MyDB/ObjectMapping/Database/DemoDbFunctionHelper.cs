@@ -100,11 +100,19 @@ namespace ObjectMapping.Database
 							{
 								var buffer = new byte[1024];
 								var read = reader.GetBytes(reader.GetOrdinal("StrArray"), 0, buffer, 0, buffer.Length);
-								while (read > 0)
+                                stream.Write(buffer, 0, (int)read);
+                                while (read == buffer.Length)
 								{
-									stream.Write(buffer, 0, (int)read);
-									read = reader.GetBytes(reader.GetOrdinal("StrArray"), 0, buffer, 0, buffer.Length);
-								}
+                                    try
+                                    {
+                                        read = reader.GetBytes(reader.GetOrdinal("StrArray"), stream.Position, buffer, 0, buffer.Length);
+                                        stream.Write(buffer, 0, (int)read);    
+                                    }
+									catch(Exception e)
+									{
+									    break;
+									}
+                                }
 								stream.Position = 0;
 								var dbSerializeHelper = new DbSerializerHelper(new BinaryReader(stream));
 								result.StrArray = dbSerializeHelper.ReadArrayString();
@@ -118,6 +126,7 @@ namespace ObjectMapping.Database
 							break;
 					}
 				}
+			    return result;
 			}
 			return null;
 		}
