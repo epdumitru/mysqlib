@@ -89,6 +89,7 @@
     <Compile Include="Database\TableExecutor.cs" />
     <Compile Include="DbObjectContainer.cs" />
     <Compile Include="DbSerializerHelper.cs" />
+    <Compile Include="DbFunctionHelperManager.cs" />
     <Compile Include="MySql\Connections\MySqlConnectionManager.cs" />
     <Compile Include="Database\Query.cs" />
     <Compile Include="Database\QueryExecutor.cs" />
