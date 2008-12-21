@@ -71,12 +71,61 @@ namespace ObjectMapping
 		{
 			var typeBuilderHelper = assemblyBuilderHelper.DefineType(type.Name + "Helper", typeof (object),
 			                                                         typeof (IDbFunctionHelper));
-			typeBuilderHelper.DefineField("dbObjectContainer", typeof (DbObjectContainer), FieldAttributes.Private);
-			var objectContainerProperty = typeBuilderHelper.TypeBuilder.DefineProperty("")
+			CreateProperty(typeBuilderHelper);
+			CreateUpdateFunction(type, typeBuilderHelper);
+			CreateInsertFunction(type, typeBuilderHelper);
+			CreateReadObjectFunction(type, typeBuilderHelper);
 			var desType = typeBuilderHelper.Create();
 			var result = (IDbFunctionHelper) Activator.CreateInstance(desType);
 			result.DbObjectContainer = dbObjectContainer;
 			return result;
+		}
+
+		private void CreateReadObjectFunction(Type type, TypeBuilderHelper helper)
+		{
+			
+		}
+
+		private void CreateInsertFunction(Type type, TypeBuilderHelper helper)
+		{
+			throw new NotImplementedException();
+		}
+
+		private void CreateUpdateFunction(Type type, TypeBuilderHelper typeBuilderHelper)
+		{
+			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
+			var methodEmit = typeBuilderHelper.DefineMethod(typeof (IDbFunctionHelper).GetMethod("Update")).Emitter;
+
+
+		}
+
+		private void CreateProperty(TypeBuilderHelper typeBuilderHelper)
+		{
+			var dbObjectContainerField = typeBuilderHelper.DefineField("dbObjectContainer", typeof (DbObjectContainer), FieldAttributes.Private);
+			var objectContainerProperty = typeBuilderHelper.TypeBuilder.DefineProperty("DbObjectContainer",
+			                                                                           PropertyAttributes.HasDefault,
+			                                                                           typeof (DbObjectContainer),
+			                                                                           new[] { typeof(DbObjectContainer) });
+			var attributes = MethodAttributes.Public | MethodAttributes.SpecialName |
+			                 MethodAttributes.HideBySig;
+			var objectContainerGetMethod = typeBuilderHelper.DefineMethod("get_DbObjectContainer",
+			                                                              attributes, typeof(DbObjectContainer), Type.EmptyTypes);
+			var objectContainerGetMethodEmit = objectContainerGetMethod.Emitter;
+			objectContainerGetMethodEmit
+				.ldarg_0
+				.ldfld(dbObjectContainerField)
+				.ret();
+
+			var objectContainerSetMethod = typeBuilderHelper.DefineMethod("set_DbObjectContainer",
+			                                                              attributes, null, typeof(DbObjectContainer));
+			var objectContainerSetMethodEmit = objectContainerSetMethod.Emitter;
+			objectContainerSetMethodEmit
+				.ldarg_0
+				.ldarg_1
+				.stfld(dbObjectContainerField)
+				.ret();
+			objectContainerProperty.SetGetMethod(objectContainerGetMethod);
+			objectContainerProperty.SetSetMethod(objectContainerSetMethod);
 		}
 	}
 }
