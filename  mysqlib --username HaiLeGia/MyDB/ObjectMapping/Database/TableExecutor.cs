@@ -7,7 +7,7 @@ using ObjectMapping.Database.Connections;
 
 namespace ObjectMapping.Database
 {
-	public class TableExecutor
+	internal class TableExecutor : ITableExecutor
 	{
 		private IConnectionManager connectionManager;
 
@@ -144,7 +144,7 @@ namespace ObjectMapping.Database
 			}
 			if (typeP == typeof(string))
 			{
-				object[] attribute = propertyInfo.GetCustomAttributes(typeof(StringAttribute), false);
+				object[] attribute = propertyInfo.GetCustomAttributes(typeof(StringAttribute), true);
 				if (attribute.Length > 0)
 				{
 					var @string = (StringAttribute)attribute[0];

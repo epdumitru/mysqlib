@@ -31,7 +31,7 @@ namespace ObjectSerializer
 		public static Assembly CreateSerializableAssembly(Assembly originalAssembly)
 		{
 			var originalAsmName = originalAssembly.GetName();
-			var assemblyBuilderHelper = new AssemblyBuilderHelper(originalAsmName.Name + "Proxy" + ".dll");
+			var assemblyBuilderHelper = new AssemblyBuilderHelper(originalAsmName.Name + "Proxy.dll");
 			var types = originalAssembly.GetTypes();
 			foreach (var type in types)
 			{
@@ -91,7 +91,7 @@ namespace ObjectSerializer
 			foreach (var property in propperties)
 			{
 				var propertyType = property.PropertyType;
-				if (property.GetCustomAttributes(typeof(NonSerializeAttribute), false).Length > 0 || !property.CanWrite || !property.CanRead)
+				if (property.GetCustomAttributes(typeof(NonSerializeAttribute), true).Length > 0 || !property.CanWrite || !property.CanRead)
 				{
 					continue;
 				}

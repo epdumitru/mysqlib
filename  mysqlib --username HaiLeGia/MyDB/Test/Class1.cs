@@ -49,8 +49,14 @@ namespace Test
 		{
 			return typeof (Class1);
 		}
+
 		public static void Main(string[] args)
 		{
+			var dbObjectContainer = new DbObjectContainer();
+			dbObjectContainer.Register(typeof(TestObject).Assembly);
+//			dbObjectContainer.QueryExecutor.
+
+
 //			var formatter1 = new BinaryFormatter();
 //			TestObject2 testObject = new TestObject2();
 //			Stopwatch watch = new Stopwatch();
