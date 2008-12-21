@@ -18,7 +18,7 @@ namespace ObjectMapping.Database
 			set { dbObjectContainer = value; }
 		}
 
-		public int Update(object o, DbConnection connection)
+		public int Update(IDirtyObject o, DbConnection connection)
 		{
 			int result = 0;
 			var command = connection.CreateCommand();
@@ -48,7 +48,7 @@ namespace ObjectMapping.Database
             return result;
 		}
 
-		public int Insert(object o, DbConnection connection)
+		public int Insert(IDirtyObject o, DbConnection connection)
 		{
 		    int result = 0;
 		    var command = connection.CreateCommand();

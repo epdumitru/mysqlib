@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using BLToolkit.Reflection.Emit;
 using ObjectMapping.Database;
@@ -30,14 +31,14 @@ namespace ObjectMapping
 			set { dbObjectContainer = value; }
 		}
 
-		public int Update(object o, DbConnection connection)
+		public int Update(IDirtyObject o, DbConnection connection)
 		{
 			var type = o.GetType();
 			var dbFunctionHelper = GetDbFunctionHelper(type);
 			return dbFunctionHelper.Update(o, connection);
 		}
 
-		public int Insert(object o, DbConnection connection)
+		public int Insert(IDirtyObject o, DbConnection connection)
 		{
 			var type = o.GetType();
 			var dbFunctionHelper = GetDbFunctionHelper(type);
@@ -94,8 +95,42 @@ namespace ObjectMapping
 		private void CreateUpdateFunction(Type type, TypeBuilderHelper typeBuilderHelper)
 		{
 			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
+			var properties = classMetadata.Properties;
+			var mappingTable = classMetadata.MappingTable;
 			var methodEmit = typeBuilderHelper.DefineMethod(typeof (IDbFunctionHelper).GetMethod("Update")).Emitter;
-
+			var resultLocal = methodEmit.DeclareLocal(typeof (int));
+			var commandLocal = methodEmit.DeclareLocal(typeof (DbCommand));
+			var commandParameters = methodEmit.DeclareLocal(typeof (DbParameterCollection));
+			var queryBuilder = new StringBuilder("UPDATE " + mappingTable + " SET ");
+			foreach (var mappingInfo in properties.Values)
+			{
+				if (mappingInfo.MappingField != "Id")
+				{
+					queryBuilder.Append(mappingInfo.MappingField + "=@" + mappingInfo.MappingField + ", ");	
+				}
+			}
+			var tmpString = queryBuilder.ToString(0, queryBuilder.Length - 2);
+			queryBuilder.Length = 0;
+			queryBuilder.Append(tmpString);
+			queryBuilder.Append(" WHERE Id = @Id");
+			methodEmit
+				.ldc_i4_0
+				.stloc(resultLocal)
+				.ldarg_2
+				.call(typeof (DbConnection).GetMethod("CreateCommand"))
+				.stloc(commandLocal)
+				.ldloc(commandLocal)
+				.ldstr(queryBuilder.ToString())
+				.call(typeof (DbCommand).GetMethod("set_CommandText"))
+				.ldloc(commandLocal)
+				.call(typeof(DbCommand).GetMethod("get_Parameters"))
+				.stloc(commandParameters)
+				;
+			foreach (var mappingInfo in properties.Values)
+			{
+			
+					
+			}
 
 		}
 

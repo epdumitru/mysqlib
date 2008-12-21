@@ -7,7 +7,7 @@ using ObjectMapping.Attributes;
 namespace ObjectMapping.Persistents
 {
     [PersistentAttribute]
-    public class UserData
+    public class UserData : IDirtyObject
     {
         private long id;
         private string username;
@@ -45,5 +45,16 @@ namespace ObjectMapping.Persistents
             get { return strArray; }
             set { strArray = value; }
         }
+
+    	#region Implementation of IDirtyObject
+
+    	private bool isDirty;
+    	public bool IsDirty
+    	{
+    		get { return isDirty; }
+    		set { isDirty = value; }
+    	}
+
+    	#endregion
     }
 }
