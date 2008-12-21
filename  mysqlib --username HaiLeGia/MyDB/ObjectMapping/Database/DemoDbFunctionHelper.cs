@@ -28,13 +28,20 @@ namespace ObjectMapping.Database
 				var u = (UserData) o;
 				var builder = new StringBuilder();
 				byte[] strArrayBytes;
-				using (var stream = new MemoryStream())
+				
+                using (var stream = new MemoryStream())
 				{
 					var dbSerializerHelper = new DbSerializerHelper(new BinaryWriter(stream));
 					dbSerializerHelper.Write(u.StrArray);
 					strArrayBytes = stream.ToArray();
 				}
-				builder.AppendFormat("UPDATE UserData SET Username = {0}, Password = {1}, StrArray = {2} WHERE Id = {3};", u.Username, u.Password, strArrayBytes, u.Id);
+			    var strArrBytesStr = new StringBuilder(strArrayBytes.Length + 2);
+			    strArrBytesStr.Append("0x");
+                for (var i = 0; i < strArrayBytes.Length; i++)
+                {
+                    strArrBytesStr.Append(string.Format("{0:x2}", strArrayBytes[i]));    
+                }
+                builder.AppendFormat("UPDATE UserData SET Username = {0}, Password = {1}, StrArray = {2} WHERE Id = {3};", u.Username, u.Password, strArrBytesStr, u.Id);
 				if (u.Other != null)
 				{
 					builder.Append(GetUpdateString(u.Other));
@@ -58,7 +65,7 @@ namespace ObjectMapping.Database
                     dbSerializerHelper.Write(u.StrArray);
                     strArrayBytes = stream.ToArray();
                 }
-                builder.AppendFormat("INSERT INTO UserData VALUES (Username , Password , StrArray) ({0} {1} {2})", u.Username, u.Password, strArrayBytes);
+                builder.AppendFormat("INSERT INTO UserData  (Username , Password , StrArray) VALUES ({0}, {1}, {2})", u.Username, u.Password, strArrayBytes);
                 if (u.Other != null)
                 {
                     builder.Append(GetUpdateString(u.Other));
