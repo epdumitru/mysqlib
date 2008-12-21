@@ -228,7 +228,7 @@ namespace ObjectMapping.Database
 			}
 		}
 
-		public int Update(object dbObject, IsolationLevel? isolationLevel)
+		public int Update(IDirtyObject dbObject, IsolationLevel? isolationLevel)
 		{
 			using (var connection = connectionManager.GetUpdateConnection())
 			{
@@ -254,7 +254,7 @@ namespace ObjectMapping.Database
 			}
 		}
 
-		public int Insert(object dbObject, IsolationLevel? isolationLevel)
+		public int Insert(IDirtyObject dbObject, IsolationLevel? isolationLevel)
 		{
 			using (var connection = connectionManager.GetUpdateConnection())
 			{
