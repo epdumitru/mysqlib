@@ -7,7 +7,7 @@ using ObjectMapping.Attributes;
 namespace ObjectMapping.Persistents
 {
     [PersistentAttribute]
-    public class UserData : IDirtyObject
+    public class UserData : IDbObject
     {
         private long id;
         private string username;
@@ -21,7 +21,13 @@ namespace ObjectMapping.Persistents
             set { id = value; }
         }
 
-        public string Username
+    	public long UpdateTime
+    	{
+    		get { throw new System.NotImplementedException(); }
+    		set { throw new System.NotImplementedException(); }
+    	}
+
+    	public string Username
         {
             get { return username; }
             set { username = value; }
@@ -46,7 +52,7 @@ namespace ObjectMapping.Persistents
             set { strArray = value; }
         }
 
-    	#region Implementation of IDirtyObject
+    	#region Implementation of IDbObject
 
     	private bool isDirty;
     	public bool IsDirty

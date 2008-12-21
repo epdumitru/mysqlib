@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 
 namespace ObjectMapping
@@ -1314,5 +1315,58 @@ namespace ObjectMapping
 		}
 
 		#endregion
+
+		public static byte[] ReadBlob(string columnName, DbDataReader reader)
+		{
+			using (var stream = new MemoryStream())
+			{
+				var buffer = new byte[1024];
+				var read = reader.GetBytes(reader.GetOrdinal(columnName), 0, buffer, 0, buffer.Length);
+				stream.Write(buffer, 0, (int) read);
+				while (read == buffer.Length)
+				{
+					try
+					{
+						read = reader.GetBytes(reader.GetOrdinal(columnName), stream.Position, buffer, 0, buffer.Length);
+						stream.Write(buffer, 0, (int)read);
+					}
+					catch(Exception e)
+					{
+						Logger.Log.WriteLog("Exception when read blob data: " + e);
+					}
+				}
+				return stream.ToArray();
+			}
+		}
+
+		public static TimeRelationInfo ReadRelationTimeInfo(string columnName, DbDataReader reader)
+		{
+			using (var stream = new MemoryStream())
+			{
+				var buffer = new byte[1024];
+				var read = reader.GetBytes(reader.GetOrdinal(columnName), 0, buffer, 0, buffer.Length);
+				stream.Write(buffer, 0, (int)read);
+				while (read == buffer.Length)
+				{
+					try
+					{
+						read = reader.GetBytes(reader.GetOrdinal(columnName), stream.Position, buffer, 0, buffer.Length);
+						stream.Write(buffer, 0, (int)read);
+					}
+					catch (Exception e)
+					{
+						Logger.Log.WriteLog("Exception when read blob data: " + e);
+					}
+				}
+				if (stream.Length > 0)
+				{
+					stream.Position = 0;
+					var dbSerilizerHelper = new DbSerializerHelper(new BinaryReader(stream));
+					var result = new TimeRelationInfo { updateTime = dbSerilizerHelper.ReadInt64(), idList = dbSerilizerHelper.ReadListInt64() };
+					return result;
+				}
+			}
+			return null;
+		}
 	}
 }

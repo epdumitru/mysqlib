@@ -112,12 +112,19 @@ namespace ObjectMapping.Database
 
 		public virtual T SelectById<T>(long id, IsolationLevel? isolationLevel, params string[] propertyNames) where T : class 
 		{
-			string[] selectProperties;
-			if (propertyNames != SelectQuery.ALL_PROPS && Array.IndexOf(propertyNames, "Id") < 0)
+			IList<string> selectProperties;
+			if (propertyNames != SelectQuery.ALL_PROPS)
 			{
-				selectProperties = new string[propertyNames.Length + 1];
-				selectProperties[0] = "Id";
-				Array.Copy(propertyNames, 0, selectProperties, 1, propertyNames.Length);
+				var tempSelectProperties = new List<string>(propertyNames);
+				if (!tempSelectProperties.Contains("Id"))
+				{
+					tempSelectProperties.Add("Id");
+				}
+				if (!tempSelectProperties.Contains("UpdateTime"))
+				{
+					tempSelectProperties.Add("UpdateTime");
+				}
+				selectProperties = tempSelectProperties;
 			}
 			else
 			{
@@ -136,7 +143,7 @@ namespace ObjectMapping.Database
 				}
 				else
 				{
-					for (var i = 0; i < selectProperties.Length; i++)
+					for (var i = 0; i < selectProperties.Count; i++)
 					{
 						str.Append(selectProperties[i] + ", ");
 					}
@@ -171,12 +178,19 @@ namespace ObjectMapping.Database
 
 		public T SelectByForeignKey<T>(string foreignKeyName, long referencedId, IsolationLevel? isolationLevel, params string[] propertyNames) where T : class
 		{
-			string[] selectProperties;
-			if (propertyNames != SelectQuery.ALL_PROPS && Array.IndexOf(propertyNames, "Id") < 0)
+			IList<string> selectProperties;
+			if (propertyNames != SelectQuery.ALL_PROPS)
 			{
-				selectProperties = new string[propertyNames.Length + 1];
-				selectProperties[0] = "Id";
-				Array.Copy(propertyNames, 0, selectProperties, 1, propertyNames.Length);
+				var tempSelectProperties = new List<string>(propertyNames);
+				if (!tempSelectProperties.Contains("Id"))
+				{
+					tempSelectProperties.Add("Id");
+				}
+				if (!tempSelectProperties.Contains("UpdateTime"))
+				{
+					tempSelectProperties.Add("UpdateTime");
+				}
+				selectProperties = tempSelectProperties;
 			}
 			else
 			{
@@ -195,7 +209,7 @@ namespace ObjectMapping.Database
 				}
 				else
 				{
-					for (var i = 0; i < selectProperties.Length; i++)
+					for (var i = 0; i < selectProperties.Count; i++)
 					{
 						str.Append(selectProperties[i] + ", ");
 					}
@@ -228,7 +242,7 @@ namespace ObjectMapping.Database
 			}
 		}
 
-		public int Update(IDirtyObject dbObject, IsolationLevel? isolationLevel)
+		public int Update(IDbObject dbObject, IsolationLevel? isolationLevel)
 		{
 			using (var connection = connectionManager.GetUpdateConnection())
 			{
@@ -237,7 +251,23 @@ namespace ObjectMapping.Database
 					var transaction = connection.BeginTransaction();
 					try
 					{
-						var result = dbFunctionHelper.Update(dbObject, connection);
+						var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(dbObject.GetType());
+						var command = connection.CreateCommand();
+						command.CommandText = "SELECT UpdateTime FROM " + classMetadata.MappingTable + " WHERE Id = " + dbObject.Id;
+						long updateTime = -1;
+						using (var reader = command.ExecuteReader(CommandBehavior.SingleRow))
+						{
+							updateTime = reader.GetInt64(reader.GetOrdinal("UpdateTime"));
+							if (updateTime > dbObject.UpdateTime)
+							{
+								return 0;
+							}
+						}
+						if (updateTime == -1)
+						{
+							throw new ApplicationException("Cannot get update time of object: " + dbObject + " with id: " + dbObject.Id);
+						}
+						var result = dbFunctionHelper.Update(dbObject, connection, updateTime);
 						transaction.Commit();
 						return result;
 					}
@@ -247,14 +277,11 @@ namespace ObjectMapping.Database
 						throw new ApplicationException(e.ToString());
 					}
 				}
-				else
-				{
-					return dbFunctionHelper.Update(dbObject, connection);
-				}
+				return dbFunctionHelper.Update(dbObject, connection, -1);
 			}
 		}
 
-		public int Insert(IDirtyObject dbObject, IsolationLevel? isolationLevel)
+		public int Insert(IDbObject dbObject, IsolationLevel? isolationLevel)
 		{
 			using (var connection = connectionManager.GetUpdateConnection())
 			{
@@ -311,7 +338,7 @@ namespace ObjectMapping.Database
 			}
 		}
 
-		private T CreateObject<T>(DbDataReader reader, string[] propertyNames) where T : class 
+		private T CreateObject<T>(DbDataReader reader, IList<string> propertyNames) where T : class 
 		{
 			var type = typeof (T);
 			if (reader.Read())
@@ -321,7 +348,7 @@ namespace ObjectMapping.Database
 			return null;
 		}
 
-		private IList<T> CreateObjects<T>(DbDataReader reader, string[] propertyNames)
+		private IList<T> CreateObjects<T>(DbDataReader reader, IList<string> propertyNames)
 		{
 			var result = new List<T>();
 			var type = typeof(T);

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using BLToolkit.Reflection.Emit;
+using MySql.Data.MySqlClient;
 using ObjectMapping.Database;
 
 namespace ObjectMapping
@@ -31,21 +33,21 @@ namespace ObjectMapping
 			set { dbObjectContainer = value; }
 		}
 
-		public int Update(IDirtyObject o, DbConnection connection)
+		public int Update(IDbObject o, DbConnection connection, long updateTime)
 		{
 			var type = o.GetType();
 			var dbFunctionHelper = GetDbFunctionHelper(type);
-			return dbFunctionHelper.Update(o, connection);
+			return dbFunctionHelper.Update(o, connection, updateTime);
 		}
 
-		public int Insert(IDirtyObject o, DbConnection connection)
+		public int Insert(IDbObject o, DbConnection connection)
 		{
 			var type = o.GetType();
 			var dbFunctionHelper = GetDbFunctionHelper(type);
 			return dbFunctionHelper.Insert(o, connection);
 		}
 
-		public object ReadObject(Type type, DbDataReader reader, string[] propertyNames)
+		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames)
 		{
 			var dbFunctionHelper = GetDbFunctionHelper(type);
 			return dbFunctionHelper.ReadObject(type, reader, propertyNames);
@@ -102,6 +104,7 @@ namespace ObjectMapping
 			var commandLocal = methodEmit.DeclareLocal(typeof (DbCommand));
 			var commandParameters = methodEmit.DeclareLocal(typeof (DbParameterCollection));
 			var queryBuilder = new StringBuilder("UPDATE " + mappingTable + " SET ");
+			var objectNotDirtyLabel = methodEmit.DefineLabel();
 			foreach (var mappingInfo in properties.Values)
 			{
 				if (mappingInfo.MappingField != "Id")
@@ -114,23 +117,75 @@ namespace ObjectMapping
 			queryBuilder.Append(tmpString);
 			queryBuilder.Append(" WHERE Id = @Id");
 			methodEmit
+				.ldarg_1
+				.call(typeof(IDbObject).GetMethod("get_IsDirty"))
+				.brfalse(objectNotDirtyLabel)
 				.ldc_i4_0
 				.stloc(resultLocal)
 				.ldarg_2
-				.call(typeof (DbConnection).GetMethod("CreateCommand"))
+				.call(typeof(DbConnection).GetMethod("CreateCommand"))
 				.stloc(commandLocal)
 				.ldloc(commandLocal)
 				.ldstr(queryBuilder.ToString())
-				.call(typeof (DbCommand).GetMethod("set_CommandText"))
+				.call(typeof(DbCommand).GetMethod("set_CommandText"))
 				.ldloc(commandLocal)
 				.call(typeof(DbCommand).GetMethod("get_Parameters"))
-				.stloc(commandParameters)
-				;
+				.stloc(commandParameters);
 			foreach (var mappingInfo in properties.Values)
 			{
-			
-					
+				var propertyInfo = mappingInfo.PropertyInfo;
+				var mappingField = mappingInfo.MappingField;
+				var propertyType = propertyInfo.PropertyType;
+				if (propertyType.IsPrimitive || propertyType == typeof(string) || propertyType == typeof(DateTime) || propertyType == typeof(decimal))
+				{
+					methodEmit
+						.ldloc(commandParameters)
+						.ldstr("@" + mappingField) //Param 1 for MySqlParameter constructor
+						.ldarg_1
+						.call(propertyInfo.GetGetMethod()) //Param 2 for MySqlParameter constructor
+						.newobj(typeof (MySqlParameter), typeof (string), typeof (object)) // Param for Add of DbParameterCollection
+						.call(typeof (DbParameterCollection).GetMethod("Add", new[] {typeof (object)}))
+							;
+				}
+				else //Property that need to be convert to byte array before set
+				{
+					var propetyValueLocal = methodEmit.DeclareLocal(propertyType);
+					var dbSerializerHelperLocal = methodEmit.DeclareLocal(typeof (DbSerializerHelper));
+					var memoryStreamLocal = methodEmit.DeclareLocal(typeof (MemoryStream));
+					var propertyByteArray = methodEmit.DeclareLocal(typeof (byte[]));
+					methodEmit
+						.ldarg_1
+						.call(propertyInfo.GetGetMethod())
+						.stloc(propetyValueLocal)
+						.newobj(typeof(MemoryStream), Type.EmptyTypes)
+						.stloc(memoryStreamLocal);
+					methodEmit.BeginExceptionBlock();
+					methodEmit
+						.ldloc(memoryStreamLocal)
+						.newobj(typeof(BinaryWriter), typeof(Stream))
+						.newobj(typeof(DbSerializerHelper), typeof(BinaryWriter))
+						.stloc(dbSerializerHelperLocal)
+						.ldloc(dbSerializerHelperLocal)
+						.ldarg_1
+						.call(propertyInfo.GetGetMethod())
+						.call(typeof(DbSerializerHelper).GetMethod("Write", new[] {propertyType}))
+						.ldloc(memoryStreamLocal)
+						.call(typeof(MemoryStream).GetMethod("ToArray"))
+						.stloc(propertyByteArray)
+						.ldloc(commandParameters)
+						.ldstr("@" + mappingField)
+						.ldloc(propertyByteArray)
+						.newobj(typeof(MySqlParameter), typeof(string), typeof(object)) // Param for Add of DbParameterCollection
+						.call(typeof(DbParameterCollection).GetMethod("Add", new[] { typeof(object) }))
+						.BeginFinallyBlock()
+						.ldloc(memoryStreamLocal)
+						.call(typeof(IDisposable).GetMethod("Dispose"))
+						.EndExceptionBlock()
+						;
+				}
 			}
+			methodEmit
+				.MarkLabel(objectNotDirtyLabel);
 
 		}
 

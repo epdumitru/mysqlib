@@ -16,7 +16,7 @@ namespace ObjectMapping.Database
 		protected int limit;
 		protected Type type;
 		protected string mappingTable;
-		protected string[] propertyNames;
+		protected IList<string> propertyNames;
 
 		public SelectQuery(Type type, int top, int limit, params string[] propertyNames)
 		{
@@ -26,11 +26,18 @@ namespace ObjectMapping.Database
 			this.top = top;
 			this.limit = limit;
 			this.type = type;
-			if (propertyNames != ALL_PROPS && Array.IndexOf(propertyNames, "Id") < 0)
+			if (propertyNames != ALL_PROPS) 
 			{
-				this.propertyNames = new string[propertyNames.Length + 1];
-				this.propertyNames[0] = "Id";
-				Array.Copy(propertyNames, 0, this.propertyNames, 1, propertyNames.Length);
+				var tempProperties = new List<string>(propertyNames);
+				if (Array.IndexOf(propertyNames, "Id") < 0)
+				{
+					tempProperties.Add("Id");	
+				}
+				if (Array.IndexOf(propertyNames, "UpdateTime") < 0)
+				{
+					tempProperties.Add("UpdateTime");
+				}
+				this.propertyNames = tempProperties;
 			}
 			else
 			{
@@ -57,7 +64,7 @@ namespace ObjectMapping.Database
 			return this;
 		}
 
-		public virtual string[] PropertyNames
+		public virtual IList<string> PropertyNames
 		{
 			get { return propertyNames; }
 		}
@@ -71,7 +78,7 @@ namespace ObjectMapping.Database
 			}
 			else
 			{
-				for (var i = 0; i < propertyNames.Length; i++)
+				for (var i = 0; i < propertyNames.Count; i++)
 				{
 					str.Append(propertyNames[i] + ", ");
 				}
