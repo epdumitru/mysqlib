@@ -54,7 +54,7 @@ namespace ObjectMapping
 		public void Config(XmlDocument document)
 		{
 			var selectionAlgorithm = new RoundRobinConnectionSelection();
-			var localhostInfor = new ConnectionInfo() { DatabaseName = "test", HostName = "127.0.0.1", Username = "root", Password = "ki11men0w" };
+			var localhostInfor = new ConnectionInfo() { DatabaseName = "test", HostName = "127.0.0.1", Username = "root", Password = "master" };
 			var listMaster = new List<ConnectionInfo>() { localhostInfor };
 			var listSlave = new List<ConnectionInfo>() { localhostInfor };
 			selectionAlgorithm.Infors = listSlave;
@@ -73,10 +73,18 @@ namespace ObjectMapping
 		{
 			var types = assembly.GetTypes();
 			var asmBuilderHelper = new AssemblyBuilderHelper("Db" + assembly.GetName().Name + ".dll");
-			foreach (var type in types)
+		    var dict = new Dictionary<ClassMetaData, bool>();
+            foreach (var type in types)
 			{
-				ClassMetaDataManager.Instace.GetClassMetaData(type);
+				var result = ClassMetaDataManager.Instace.GetClassMetaData(type);
+
+                if (result != null && !dict.ContainsKey(result))
+                {
+                    dict.Add(result, true);
+                    tableExecutor.CreateTable(result);
+                }
 			}
+            tableExecutor.CreateRelation(dict.Keys);
 #if DEBUG
 			asmBuilderHelper.Save();
 #endif

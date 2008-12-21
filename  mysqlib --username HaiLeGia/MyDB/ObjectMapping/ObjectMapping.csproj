@@ -92,6 +92,7 @@
     <Compile Include="MySql\Connections\MySqlConnectionManager.cs" />
     <Compile Include="Database\Query.cs" />
     <Compile Include="Database\QueryExecutor.cs" />
+    <Compile Include="Persistents\UserDate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -113,10 +114,6 @@
     <ProjectReference Include="..\..\CommonProject\ObjectSerializer\ObjectSerializer.csproj">
       <Project>{ADD705FF-3CB8-4583-8FE2-8D0576B47C49}</Project>
       <Name>ObjectSerializer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Persistents\Persistents.csproj">
-      <Project>{A60D6D14-F57F-438A-9B81-33CFFB3E5084}</Project>
-      <Name>Persistents</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

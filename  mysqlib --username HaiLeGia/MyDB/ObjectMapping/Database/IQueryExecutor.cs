@@ -2,7 +2,6 @@
 using System.Data;
 using System.Data.Common;
 using ObjectMapping.Database.Connections;
-using Persistents;
 
 namespace ObjectMapping.Database
 {

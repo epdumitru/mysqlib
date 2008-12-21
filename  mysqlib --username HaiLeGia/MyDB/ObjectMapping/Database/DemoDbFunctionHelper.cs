@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using MySql.Data.MySqlClient;
-using Persistents;
+using ObjectMapping.Persistents;
 
 namespace ObjectMapping.Database
 {
@@ -46,7 +46,26 @@ namespace ObjectMapping.Database
 
 		public string GetInsertString(object o)
 		{
-			throw new System.NotImplementedException();
+            var type = o.GetType();
+            if (type == typeof(UserData))
+            {
+                var u = (UserData)o;
+                var builder = new StringBuilder();
+                byte[] strArrayBytes;
+                using (var stream = new MemoryStream())
+                {
+                    var dbSerializerHelper = new DbSerializerHelper(new BinaryWriter(stream));
+                    dbSerializerHelper.Write(u.StrArray);
+                    strArrayBytes = stream.ToArray();
+                }
+                builder.AppendFormat("INSERT INTO UserData VALUES (Username , Password , StrArray) ({0} {1} {2})", u.Username, u.Password, strArrayBytes);
+                if (u.Other != null)
+                {
+                    builder.Append(GetUpdateString(u.Other));
+                }
+                return builder.ToString();
+            }
+            return null;
 		}
 
 		public object ReadObject(string typeName, DbDataReader reader, string[] propertyNames)

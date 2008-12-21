@@ -206,6 +206,7 @@ namespace ObjectMapping
 			var persistentAttrs = type.GetCustomAttributes(typeof(PersistentAttribute), true);
 			if (persistentAttrs.Length == 0)
 			{
+			    
 				throw new ArgumentException("Type is not Persistent");
 			}
 			var persistentAttr = (PersistentAttribute)persistentAttrs[0];
@@ -341,12 +342,36 @@ namespace ObjectMapping
 							}
 						}
 					}
-					else if (propertyType.IsClass)
-					{
-						var relationInfo = new RelationInfo() { OriginalMetadata = this, PropertyInfo = propertyInfo };
-						relationProperties.Add(propertyInfo.Name, relationInfo);
-					}
 				}
+                else if (propertyType.IsArray)
+                {
+
+                    var mappingInfo = new MappingInfo()
+                    {
+                        AutoIncrement = false,
+                        DefaultValue = null,
+                        Indexing = PropertyAttribute.NO_INDEX,
+                        NotNull = false,
+                        MappingField = propertyInfo.Name,
+                        Unique = false,
+                        PropertyInfo = propertyInfo
+                    };
+                    var propertyAttributes = propertyInfo.GetCustomAttributes(typeof(PropertyAttribute), true);
+                    if (propertyAttributes.Length > 0)
+                    {
+                        var propertyAttribute = (PropertyAttribute)propertyAttributes[0];
+                        if (propertyAttribute.MappingColumn != null)
+                        {
+                            mappingInfo.MappingField = propertyAttribute.MappingColumn;
+                        }
+                    }
+                    properties.Add(propertyInfo.Name, mappingInfo);
+                }
+                else if (propertyType.IsClass)
+                {
+                    var relationInfo = new RelationInfo() { OriginalMetadata = this, PropertyInfo = propertyInfo };
+                    relationProperties.Add(propertyInfo.Name, relationInfo);
+                }
 			}
 		}
 	}
