@@ -44,32 +44,38 @@ namespace ObjectMapping.Database
 				{
 					result += Update(u.Other, connection);
 				}
-				return result;
 			}
+            return result;
 		}
 
 		public int Insert(object o, DbConnection connection)
 		{
-            var type = o.GetType();
-            if (type == typeof(UserData))
+		    int result = 0;
+		    var command = connection.CreateCommand();
+		    command.CommandText = "INSERT INTO userdata (id, userName , password, strArray) VALUES (@id, @userName, @password, @strArray)";
+            
+            if (o.GetType() == typeof(UserData))
             {
-                var u = (UserData)o;
-                var builder = new StringBuilder();
+                UserData u = (UserData) o;
                 byte[] strArrayBytes;
-                using (var stream = new MemoryStream())
+                using(var stream = new MemoryStream())
                 {
                     var dbSerializerHelper = new DbSerializerHelper(new BinaryWriter(stream));
                     dbSerializerHelper.Write(u.StrArray);
                     strArrayBytes = stream.ToArray();
                 }
-                builder.AppendFormat("INSERT INTO UserData  (Username , Password , StrArray) VALUES ({0}, {1}, {2})", u.Username, u.Password, strArrayBytes);
+                command.Parameters.Add(new MySqlParameter("@id", u.Id));
+                command.Parameters.Add(new MySqlParameter("@userName", u.Username));
+                command.Parameters.Add(new MySqlParameter("@password", u.Password));
+                command.Parameters.Add(new MySqlParameter("@strArray", strArrayBytes));
+                result = command.ExecuteNonQuery();
                 if (u.Other != null)
                 {
-                    builder.Append(Update(u.Other, connection));
+                    result += Update(u.Other, connection);
                 }
-                return builder.ToString();
             }
-            return null;
+            return result;
+
 		}
 
 		public object ReadObject(Type type, DbDataReader reader, string[] propertyNames)
