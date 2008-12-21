@@ -1,48 +1,10 @@
 ﻿using System;
 using ObjectMapping;
+using Persistents;
 
 
 namespace Test
 {
-	public class TestObject
-	{
-		private int IsClass;
-
-		public TestObject()
-		{
-			IsClass = 0;
-		}
-
-		public int IsClass_
-		{
-			get { return IsClass; }
-			set { IsClass = value; }
-		}
-
-		public virtual void DoIt()
-		{
-			Console.WriteLine("Dot it");
-		}
-	}
-
-	public class TestObject2 : TestObject
-	{
-		private string name;
-
-		public string Name
-		{
-			get { return name; }
-			set { name = value; }
-		}
-
-		public override void DoIt()
-		{
-			base.DoIt();
-			DoIt();
-			Console.WriteLine("Do it 2");
-		}
-	}
-
 	public class Class1
 	{
 		public Type Test()
@@ -53,8 +15,10 @@ namespace Test
 		public static void Main(string[] args)
 		{
 			var dbObjectContainer = new DbObjectContainer();
-			dbObjectContainer.Register(typeof(TestObject).Assembly);
-//			dbObjectContainer.QueryExecutor.
+			dbObjectContainer.Register(typeof(UserData).Assembly);
+
+
+//			dbObjectContainer.QueryExecutor.Insert();
 
 
 //			var formatter1 = new BinaryFormatter();
