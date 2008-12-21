@@ -66,7 +66,7 @@ namespace ObjectMapping
 			                        		SlaveInfos = listSlave
 			                        	};
 			tableExecutor = new TableExecutor() {ConnectionManager = connectionManager};
-			queryExecutor = new QueryExecutor() {ConnectionManager = connectionManager, DbFunctionHelper = new DemoDbFunctionHelper()};
+			queryExecutor = new QueryExecutor() {ConnectionManager = connectionManager, DbFunctionHelper = new DemoDbFunctionHelper(){DbObjectContainer = this}};
 		}
 
 		public void Register(Assembly assembly)
