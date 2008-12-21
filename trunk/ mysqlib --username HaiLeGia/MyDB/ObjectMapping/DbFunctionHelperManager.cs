@@ -145,7 +145,7 @@ namespace ObjectMapping
 						.call(propertyInfo.GetGetMethod()) //Param 2 for MySqlParameter constructor
 						.newobj(typeof (MySqlParameter), typeof (string), typeof (object)) // Param for Add of DbParameterCollection
 						.call(typeof (DbParameterCollection).GetMethod("Add", new[] {typeof (object)}))
-							;
+						;
 				}
 				else //Property that need to be convert to byte array before set
 				{
@@ -184,7 +184,14 @@ namespace ObjectMapping
 						;
 				}
 			}
+
 			methodEmit
+				.ldloc(commandLocal)
+				.call(typeof(DbCommand).GetMethod("ExecuteNonQuery"))
+				.stloc(resultLocal)
+				.ldarg_1
+				.ldc_bool(false)
+				.call(typeof(IDbObject).GetMethod("set_IsDirty"))
 				.MarkLabel(objectNotDirtyLabel);
 
 		}

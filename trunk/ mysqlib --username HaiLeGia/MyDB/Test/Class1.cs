@@ -18,7 +18,7 @@ namespace Test
 		public static void Main(string[] args)
 		{
 //			var dbObjectContainer = new DbObjectContainer();
-			dbObjectContainer.Register(typeof(UserData).Assembly);
+//			dbObjectContainer.Register(typeof(UserData).Assembly);
             
 //            UserData userData = new UserData();
 
