@@ -90,12 +90,13 @@
     <Compile Include="DbObjectContainer.cs" />
     <Compile Include="DbSerializerHelper.cs" />
     <Compile Include="DbFunctionHelperManager.cs" />
-    <Compile Include="IDirtyObject.cs" />
+    <Compile Include="IDbObject.cs" />
     <Compile Include="MySql\Connections\MySqlConnectionManager.cs" />
     <Compile Include="Database\Query.cs" />
     <Compile Include="Database\QueryExecutor.cs" />
     <Compile Include="Persistents\UserDate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TimeRelationInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Text;
@@ -18,7 +19,7 @@ namespace ObjectMapping.Database
 			set { dbObjectContainer = value; }
 		}
 
-		public int Update(IDirtyObject o, DbConnection connection)
+		public int Update(IDbObject o, DbConnection connection, long updateTime)
 		{
 			int result = 0;
 			var command = connection.CreateCommand();
@@ -42,13 +43,13 @@ namespace ObjectMapping.Database
 				result = command.ExecuteNonQuery();
 				if (u.Other != null)
 				{
-					result += Update(u.Other, connection);
+					result += Update(u.Other, connection, updateTime);
 				}
 			}
             return result;
 		}
 
-		public int Insert(IDirtyObject o, DbConnection connection)
+		public int Insert(IDbObject o, DbConnection connection)
 		{
 		    int result = 0;
 		    var command = connection.CreateCommand();
@@ -71,20 +72,20 @@ namespace ObjectMapping.Database
                 result = command.ExecuteNonQuery();
                 if (u.Other != null)
                 {
-                    result += Update(u.Other, connection);
+                    result += Update(u.Other, connection, -1);
                 }
             }
             return result;
 
 		}
 
-		public object ReadObject(Type type, DbDataReader reader, string[] propertyNames)
+		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames)
 		{
 			if (type == typeof(UserData))
 			{
 				var result = new UserData();
 				result.Id = reader.GetInt64(reader.GetOrdinal("Id"));
-				for (var i = 0; i < propertyNames.Length; i++)
+				for (var i = 0; i < propertyNames.Count; i++)
 				{
 					string propertyName = propertyNames[i];
 					switch (propertyName)

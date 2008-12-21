@@ -5,8 +5,9 @@ using System.Text;
 
 namespace ObjectMapping
 {
-	public interface IDirtyObject
+	internal class TimeRelationInfo
 	{
-		bool IsDirty { get; set; }
+		public IList<long> idList;
+		public long updateTime;
 	}
 }

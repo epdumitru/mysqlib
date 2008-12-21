@@ -81,7 +81,16 @@ namespace ObjectMapping.Database
                 var relationProperties = metadata.RelationProperties;
                 foreach (var pair in relationProperties)
                 {
-                    CreateTable(pair.Value);
+					CreateTable(pair.Value);
+                	var originalMappingTable = metadata.MappingTable;
+                	var queryBuilder = new StringBuilder("ALTER TABLE " + originalMappingTable + " ");
+                	queryBuilder.Append("ADD COLUMN " + pair.Value.PartnerKey + "Info BLOB NULL");
+					using (var connection = connectionManager.GetUpdateConnection())
+					{
+						var command = connection.CreateCommand();
+						command.CommandText = queryBuilder.ToString();
+						command.ExecuteNonQuery();
+					}
                 }
             }
 		}
