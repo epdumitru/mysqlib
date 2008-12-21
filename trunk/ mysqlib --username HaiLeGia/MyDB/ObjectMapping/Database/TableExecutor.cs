@@ -67,7 +67,10 @@ namespace ObjectMapping.Database
 			{
 				var command = connection.CreateCommand();
 				command.CommandText = queryBuilder.ToString();
-				return command.ExecuteNonQuery();
+				int n = command.ExecuteNonQuery();
+			    command.CommandText = string.Format("INSERT INTO {0} (id) values(0)", tableName);
+			    command.ExecuteNonQuery();
+			    return n;
 			}
 		}
 
