@@ -46,20 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\CommonProject\ObjectSerializer\ObjectSerializer.csproj">
-      <Project>{ADD705FF-3CB8-4583-8FE2-8D0576B47C49}</Project>
-      <Name>ObjectSerializer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DBCache\DBCache.csproj">
-      <Project>{EAEA05D4-F0EB-4D25-945F-D9F741D67BAA}</Project>
-      <Name>DBCache</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ObjectMapping\ObjectMapping.csproj">
-      <Project>{3D03BD67-1D68-469D-926F-85C267C11426}</Project>
-      <Name>ObjectMapping</Name>
-    </ProjectReference>
+    <Compile Include="UserDate.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -6,7 +6,7 @@ using ObjectMapping.Database;
 
 namespace ObjectMapping
 {
-	public class RelationInfo
+	internal class RelationInfo
 	{
 		public const int RELATION_1_1 = 0;
 		public const int RELATION_1_N = 1;
@@ -88,7 +88,7 @@ namespace ObjectMapping
 		}
 	}
 
-	public class MappingInfo
+	internal class MappingInfo
 	{
 		private PropertyInfo propertyInfo;
 		private string mappingField;
@@ -142,7 +142,7 @@ namespace ObjectMapping
 
 	}
 
-	public class ClassMetaData
+	internal class ClassMetaData
 	{
 		private Dictionary<string, MappingInfo> properties;
 		private Dictionary<string, RelationInfo> relationProperties;
@@ -191,11 +191,6 @@ namespace ObjectMapping
 			get { return type; }
 		}
 
-		public IDbObject GetDbObject()
-		{
-			return null;
-		}
-
 		public string MappingTable
 		{
 			get { return mappingTable; }
@@ -208,7 +203,7 @@ namespace ObjectMapping
 
 		private void Init()
 		{
-			var persistentAttrs = type.GetCustomAttributes(typeof(PersistentAttribute), false);
+			var persistentAttrs = type.GetCustomAttributes(typeof(PersistentAttribute), true);
 			if (persistentAttrs.Length == 0)
 			{
 				throw new ArgumentException("Type is not Persistent");

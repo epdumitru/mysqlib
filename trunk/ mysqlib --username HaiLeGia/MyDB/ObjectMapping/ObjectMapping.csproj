@@ -47,7 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\IgnorePersistentAttribute.cs" />
-    <Compile Include="Attributes\IQueryExecutor.cs" />
+    <Compile Include="Database\DbFunctionHelper.cs" />
+    <Compile Include="Database\DemoDbFunctionHelper.cs" />
+    <Compile Include="Database\IQueryExecutor.cs" />
     <Compile Include="Attributes\PersistentAttribute.cs" />
     <Compile Include="Attributes\PropertyAttribute.cs" />
     <Compile Include="Attributes\RelationAttribute.cs" />
@@ -82,10 +84,11 @@
     <Compile Include="Database\Expression\Sum.cs" />
     <Compile Include="Database\Expression\WherePart.cs" />
     <Compile Include="Database\Expression\Xor.cs" />
-    <Compile Include="Database\IDbObject.cs" />
+    <Compile Include="Database\ITableExecutor.cs" />
     <Compile Include="Database\SelectQuery.cs" />
     <Compile Include="Database\TableExecutor.cs" />
-    <Compile Include="DbObjectFactory.cs" />
+    <Compile Include="DbObjectContainer.cs" />
+    <Compile Include="DbSerializerHelper.cs" />
     <Compile Include="MySql\Connections\MySqlConnectionManager.cs" />
     <Compile Include="Database\Query.cs" />
     <Compile Include="Database\QueryExecutor.cs" />
@@ -95,6 +98,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CommonProject\bltoolkit\BLToolkit.3.csproj">
+      <Project>{0C325F5D-E50E-4340-8724-D29896CCC583}</Project>
+      <Name>BLToolkit.3</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\CommonProject\Logger\Logger.csproj">
       <Project>{BEBCF426-8010-4DF7-91F6-5136D17FE3D5}</Project>
       <Name>Logger</Name>
@@ -106,6 +113,10 @@
     <ProjectReference Include="..\..\CommonProject\ObjectSerializer\ObjectSerializer.csproj">
       <Project>{ADD705FF-3CB8-4583-8FE2-8D0576B47C49}</Project>
       <Name>ObjectSerializer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Persistents\Persistents.csproj">
+      <Project>{A60D6D14-F57F-438A-9B81-33CFFB3E5084}</Project>
+      <Name>Persistents</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

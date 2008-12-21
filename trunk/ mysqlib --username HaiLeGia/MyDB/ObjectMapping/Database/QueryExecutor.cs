@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using ObjectMapping.Attributes;
+using System.Text;
 using ObjectMapping.Database.Connections;
 
 namespace ObjectMapping.Database
@@ -10,11 +10,18 @@ namespace ObjectMapping.Database
 	public class QueryExecutor : IQueryExecutor
 	{
 		private IConnectionManager connectionManager;
+		private IDbFunctionHelper dbFunctionHelper;
 
 		public IConnectionManager ConnectionManager
 		{
 			get { return connectionManager; }
 			set { connectionManager = value; }
+		}
+
+		public IDbFunctionHelper DbFunctionHelper
+		{
+			get { return dbFunctionHelper; }
+			set { dbFunctionHelper = value; }
 		}
 
 		public virtual int ExecutNonQuery(Query query, IsolationLevel? isolationLevel)
@@ -105,14 +112,40 @@ namespace ObjectMapping.Database
 
 		public virtual T SelectById<T>(long id, IsolationLevel? isolationLevel, params string[] propertyNames) where T : class 
 		{
+			string[] selectProperties;
+			if (propertyNames != SelectQuery.ALL_PROPS && Array.IndexOf(propertyNames, "Id") < 0)
+			{
+				selectProperties = new string[propertyNames.Length + 1];
+				selectProperties[0] = "Id";
+				Array.Copy(propertyNames, 0, selectProperties, 1, propertyNames.Length);
+			}
+			else
+			{
+				selectProperties = propertyNames;
+			}
 			var type = typeof (T);
 			var metadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
 			var mappingTable = metadata.MappingTable;
-			var mappingPrimKey = metadata.MappingPrimaryKey;
 			using (var connection = connectionManager.GetReadConnection())
 			{
 				var command = connection.CreateCommand();
-				command.CommandText = string.Format("SELECT * FROM {0} WHERE {1} = {2}", mappingTable, mappingPrimKey, id);
+				var str = new StringBuilder("SELECT ");
+				if (propertyNames == SelectQuery.ALL_PROPS)
+				{
+					str.Append("* ");
+				}
+				else
+				{
+					for (var i = 0; i < selectProperties.Length; i++)
+					{
+						str.Append(selectProperties[i] + ", ");
+					}
+					var tmpString = str.ToString(0, str.Length - 2);
+					str.Length = 0;
+					str.Append(tmpString);
+				}
+				str.AppendFormat(" FROM {0} WHERE Id = {1}", mappingTable, id);
+				command.CommandText = str.ToString();
 				DbDataReader reader;
 				if (isolationLevel != null)
 				{
@@ -132,16 +165,75 @@ namespace ObjectMapping.Database
 				{
 					reader = command.ExecuteReader(CommandBehavior.SingleRow);
 				}
-				return CreateObject<T>(reader, propertyNames);
+				return CreateObject<T>(reader, selectProperties);
 			}
 		}
 
-		public int Update(IDbObject dbObject, int updateDepth, IsolationLevel? isolationLevel)
+		public T SelectByForeignKey<T>(string foreignKeyName, long referencedId, IsolationLevel? isolationLevel, params string[] propertyNames) where T : class
+		{
+			string[] selectProperties;
+			if (propertyNames != SelectQuery.ALL_PROPS && Array.IndexOf(propertyNames, "Id") < 0)
+			{
+				selectProperties = new string[propertyNames.Length + 1];
+				selectProperties[0] = "Id";
+				Array.Copy(propertyNames, 0, selectProperties, 1, propertyNames.Length);
+			}
+			else
+			{
+				selectProperties = propertyNames;
+			}
+			var type = typeof(T);
+			var metadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
+			var mappingTable = metadata.MappingTable;
+			using (var connection = connectionManager.GetReadConnection())
+			{
+				var command = connection.CreateCommand();
+				var str = new StringBuilder("SELECT ");
+				if (propertyNames == SelectQuery.ALL_PROPS)
+				{
+					str.Append("* ");
+				}
+				else
+				{
+					for (var i = 0; i < selectProperties.Length; i++)
+					{
+						str.Append(selectProperties[i] + ", ");
+					}
+					var tmpString = str.ToString(0, str.Length - 2);
+					str.Length = 0;
+					str.Append(tmpString);
+				}
+				str.AppendFormat(" FROM {0} WHERE {1} = {2}", mappingTable, foreignKeyName, referencedId);
+				command.CommandText = str.ToString();
+				DbDataReader reader;
+				if (isolationLevel != null)
+				{
+					var transaction = connection.BeginTransaction();
+					try
+					{
+						reader = command.ExecuteReader(CommandBehavior.SingleRow);
+						transaction.Commit();
+					}
+					catch (Exception e)
+					{
+						transaction.Rollback();
+						throw new ApplicationException(e.ToString());
+					}
+				}
+				else
+				{
+					reader = command.ExecuteReader(CommandBehavior.SingleRow);
+				}
+				return CreateObject<T>(reader, selectProperties);
+			}
+		}
+
+		public int Update(object dbObject, IsolationLevel? isolationLevel)
 		{
 			using (var connection = connectionManager.GetUpdateConnection())
 			{
 				var command = connection.CreateCommand();
-				command.CommandText = dbObject.Update(updateDepth);
+				command.CommandText = dbFunctionHelper.GetUpdateString(dbObject);
 				if (isolationLevel != null)
 				{
 					var transaction = connection.BeginTransaction();
@@ -164,12 +256,12 @@ namespace ObjectMapping.Database
 			}
 		}
 
-		public int Insert(IDbObject dbObject, IsolationLevel? isolationLevel)
+		public int Insert(object dbObject, IsolationLevel? isolationLevel)
 		{
 			using (var connection = connectionManager.GetUpdateConnection())
 			{
 				var command = connection.CreateCommand();
-				command.CommandText = dbObject.Insert();
+				command.CommandText = dbFunctionHelper.GetInsertString(dbObject);
 				if (isolationLevel != null)
 				{
 					var transaction = connection.BeginTransaction();
@@ -192,7 +284,7 @@ namespace ObjectMapping.Database
 			}
 		}
 
-		public long Count<T>(IsolationLevel? isolationLevel) where T : IDbObject
+		public long Count<T>(IsolationLevel? isolationLevel)
 		{
 			var type = typeof (T);
 			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
@@ -223,29 +315,23 @@ namespace ObjectMapping.Database
 			}
 		}
 
-		private static T CreateObject<T>(DbDataReader reader, string[] propertyNames) where T : class 
+		private T CreateObject<T>(DbDataReader reader, string[] propertyNames) where T : class 
 		{
 			var type = typeof (T);
-			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
 			if (reader.Read())
 			{
-				var o = classMetadata.GetDbObject();
-				o.ReadFields(reader, propertyNames);
-				return (T) o;
+				return (T) dbFunctionHelper.ReadObject(type.Name, reader, propertyNames);
 			}
 			return null;
 		}
 
-		private static IList<T> CreateObjects<T>(DbDataReader reader, string[] propertyNames)
+		private IList<T> CreateObjects<T>(DbDataReader reader, string[] propertyNames)
 		{
 			var result = new List<T>();
 			var type = typeof(T);
-			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
 			while (reader.Read())
 			{
-				var o = classMetadata.GetDbObject();
-				o.ReadFields(reader, propertyNames);
-				result.Add((T) o);
+				result.Add((T) dbFunctionHelper.ReadObject(type.Name, reader, propertyNames));
 			}
 			return result;
 		}

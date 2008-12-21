@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using ObjectMapping.Database;
-using ObjectMapping.Database.Connections;
-using ObjectMapping.MySql.Connections;
 
 namespace ObjectMapping
 {
-	public class ClassMetaDataManager
+	internal class ClassMetaDataManager
 	{
 		private IDictionary<Type, ClassMetaData> metadataMaps;
 		public static ClassMetaDataManager Instace = new ClassMetaDataManager();
@@ -16,31 +12,6 @@ namespace ObjectMapping
 		{
 			metadataMaps = new Dictionary<Type, ClassMetaData>();	
 		}
-
-		public void Register(Assembly assembly)
-		{
-		    var dict = new Dictionary<ClassMetaData, bool>();
-			var types = assembly.GetTypes();
-			for (var i = 0; i < types.Length; i++)
-			{
-				var metadata = GetClassMetaData(types[i]);
-			    if (!dict.ContainsKey(metadata))
-			    {
-			        dict.Add(metadata, true);
-			    }
-            }
-		    var exexutor = new TableExecutor();
-		    var selectionAlgorithm = new RoundRobinConnectionSelection();
-		    var localhostInfor = new ConnectionInfo()
-		                             {DatabaseName = "test", HostName = "127.0.0.1", Username = "root", Password = "ki11men0w"};
-		    var listMaster = new List<ConnectionInfo>() {localhostInfor};
-		    var listSlave = new List<ConnectionInfo>() {localhostInfor};
-		    selectionAlgorithm.Infors = listSlave;
-            exexutor.ConnectionManager = new MySqlConnectionManager() {MasterConnectionSelection = selectionAlgorithm, SlaveConnectionSelection = selectionAlgorithm, MasterInfos = listMaster, SlaveInfos = listSlave};
-            
-            exexutor.CreateTables(dict.Keys);
-            exexutor.CreateRelation(dict.Keys);
-        }
 
 		public ClassMetaData GetClassMetaData(Type type)
 		{
@@ -56,7 +27,7 @@ namespace ObjectMapping
 				}
 				catch (Exception e)
 				{
-					
+					Logger.Log.WriteLog("Exception while register object: " + e);
 				}
 			}
 			return result;

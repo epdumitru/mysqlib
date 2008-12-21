@@ -21,12 +21,22 @@ namespace ObjectMapping.Database
 		public SelectQuery(Type type, int top, int limit, params string[] propertyNames)
 		{
 			this.type = type;
-			var classMetadatas = type.GetCustomAttributes(typeof(PersistentAttribute), false);
+			var classMetadatas = type.GetCustomAttributes(typeof(PersistentAttribute), true);
 			mappingTable = ((PersistentAttribute)classMetadatas[0]).MappingTable;
 			this.top = top;
 			this.limit = limit;
 			this.type = type;
-			this.propertyNames = propertyNames;
+			if (propertyNames != ALL_PROPS && Array.IndexOf(propertyNames, "Id") < 0)
+			{
+				this.propertyNames = new string[propertyNames.Length + 1];
+				this.propertyNames[0] = "Id";
+				Array.Copy(propertyNames, 0, this.propertyNames, 1, propertyNames.Length);
+			}
+			else
+			{
+				this.propertyNames = propertyNames;	
+			}
+			
 		}
 
 		public virtual SelectQuery Where(Expression.Expression condition)
@@ -63,10 +73,11 @@ namespace ObjectMapping.Database
 			{
 				for (var i = 0; i < propertyNames.Length; i++)
 				{
-					str.Append(propertyNames + ", ");
+					str.Append(propertyNames[i] + ", ");
 				}
 				var tmpString = str.ToString(0, str.Length - 2);
 				str.Length = 0;
+				str.Append(tmpString);
 			}
 			str.Append(" FROM " + mappingTable + " ");
 			if (wherePart != null)

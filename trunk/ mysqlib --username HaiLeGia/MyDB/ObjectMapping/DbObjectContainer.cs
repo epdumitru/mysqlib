@@ -1,0 +1,86 @@
+﻿#define DEBUG
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Xml;
+using BLToolkit.Reflection.Emit;
+using ObjectMapping.Database;
+using ObjectMapping.Database.Connections;
+using ObjectMapping.MySql.Connections;
+
+namespace ObjectMapping
+{
+	public class DemoObject
+	{
+		private long id;
+		private object syncRootObject;
+
+		public long Id
+		{
+			get { return id; }
+			set { id = value; }
+		}
+
+		public object SyncRootObject
+		{
+			get { return syncRootObject; }
+			set { syncRootObject = value; }
+		}
+
+		
+	}
+
+	public class DbObjectContainer
+	{
+		private IConnectionManager connectionManager;
+		private IQueryExecutor queryExecutor;
+		private ITableExecutor tableExecutor;
+
+		internal ITableExecutor TableExecutor
+		{
+			get { return tableExecutor; }
+		}
+
+		public IQueryExecutor QueryExecutor
+		{
+			get { return queryExecutor; }
+		}
+
+		public DbObjectContainer()
+		{
+			Config(null);
+		}
+
+		public void Config(XmlDocument document)
+		{
+			var selectionAlgorithm = new RoundRobinConnectionSelection();
+			var localhostInfor = new ConnectionInfo() { DatabaseName = "test", HostName = "127.0.0.1", Username = "root", Password = "ki11men0w" };
+			var listMaster = new List<ConnectionInfo>() { localhostInfor };
+			var listSlave = new List<ConnectionInfo>() { localhostInfor };
+			selectionAlgorithm.Infors = listSlave;
+			connectionManager = new MySqlConnectionManager()
+			                        	{
+			                        		MasterConnectionSelection = selectionAlgorithm,
+			                        		SlaveConnectionSelection = selectionAlgorithm,
+			                        		MasterInfos = listMaster,
+			                        		SlaveInfos = listSlave
+			                        	};
+			tableExecutor = new TableExecutor() {ConnectionManager = connectionManager};
+			queryExecutor = new QueryExecutor() {ConnectionManager = connectionManager, DbFunctionHelper = new DemoDbFunctionHelper()};
+		}
+
+		public void Register(Assembly assembly)
+		{
+			var types = assembly.GetTypes();
+			var asmBuilderHelper = new AssemblyBuilderHelper("Db" + assembly.GetName().Name + ".dll");
+			foreach (var type in types)
+			{
+				ClassMetaDataManager.Instace.GetClassMetaData(type);
+			}
+#if DEBUG
+			asmBuilderHelper.Save();
+#endif
+		}
+		
+	}
+}
