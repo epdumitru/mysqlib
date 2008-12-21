@@ -15,9 +15,13 @@ namespace Test
 		public static void Main(string[] args)
 		{
 			var dbObjectContainer = new DbObjectContainer();
-			dbObjectContainer.Register(typeof(UserData).Assembly);
+//			dbObjectContainer.Register(typeof(UserData).Assembly);
             
             UserData userData = new UserData();
+		    userData.Username = "abc";
+		    userData.Password = "123";
+            userData.StrArray = new string[]{"1", "2"};
+            
             
 			dbObjectContainer.QueryExecutor.Insert(userData, null);
 
