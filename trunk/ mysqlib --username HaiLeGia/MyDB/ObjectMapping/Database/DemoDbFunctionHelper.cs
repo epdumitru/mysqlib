@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
-using System.Linq;
 using System.Text;
 using MySql.Data.MySqlClient;
 using ObjectMapping.Persistents;
@@ -20,38 +18,37 @@ namespace ObjectMapping.Database
 			set { dbObjectContainer = value; }
 		}
 
-		public string GetUpdateString(object o)
+		public int Update(object o, DbConnection connection)
 		{
+			int result = 0;
+			var command = connection.CreateCommand();
+			command.CommandText =
+				"UPDATE UserData SET Username = @username, Password = @password, StrArray = @strArray WHERE Id = @id";
 			var type = o.GetType();
 			if (type == typeof(UserData))
 			{
 				var u = (UserData) o;
-				var builder = new StringBuilder();
 				byte[] strArrayBytes;
-				
                 using (var stream = new MemoryStream())
 				{
 					var dbSerializerHelper = new DbSerializerHelper(new BinaryWriter(stream));
 					dbSerializerHelper.Write(u.StrArray);
 					strArrayBytes = stream.ToArray();
 				}
-			    var strArrBytesStr = new StringBuilder(strArrayBytes.Length + 2);
-			    strArrBytesStr.Append("0x");
-                for (var i = 0; i < strArrayBytes.Length; i++)
-                {
-                    strArrBytesStr.Append(string.Format("{0:x2}", strArrayBytes[i]));    
-                }
-                builder.AppendFormat("UPDATE UserData SET Username = {0}, Password = {1}, StrArray = {2} WHERE Id = {3};", u.Username, u.Password, strArrBytesStr, u.Id);
+				command.Parameters.Add(new MySqlParameter("@username", u.Username));
+				command.Parameters.Add(new MySqlParameter("@password", u.Password));
+				command.Parameters.Add(new MySqlParameter("@strArray", strArrayBytes));
+				command.Parameters.Add(new MySqlParameter("@id", u.Id));
+				result = command.ExecuteNonQuery();
 				if (u.Other != null)
 				{
-					builder.Append(GetUpdateString(u.Other));
+					result += Update(u.Other, connection);
 				}
-				return builder.ToString();
+				return result;
 			}
-			return null;
 		}
 
-		public string GetInsertString(object o)
+		public int Insert(object o, DbConnection connection)
 		{
             var type = o.GetType();
             if (type == typeof(UserData))
@@ -68,16 +65,16 @@ namespace ObjectMapping.Database
                 builder.AppendFormat("INSERT INTO UserData  (Username , Password , StrArray) VALUES ({0}, {1}, {2})", u.Username, u.Password, strArrayBytes);
                 if (u.Other != null)
                 {
-                    builder.Append(GetUpdateString(u.Other));
+                    builder.Append(Update(u.Other, connection));
                 }
                 return builder.ToString();
             }
             return null;
 		}
 
-		public object ReadObject(string typeName, DbDataReader reader, string[] propertyNames)
+		public object ReadObject(Type type, DbDataReader reader, string[] propertyNames)
 		{
-			if (typeName == "UserData")
+			if (type == typeof(UserData))
 			{
 				var result = new UserData();
 				result.Id = reader.GetInt64(reader.GetOrdinal("Id"));

@@ -1,12 +1,13 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Data.Common;
 
 namespace ObjectMapping.Database
 {
 	public interface IDbFunctionHelper
 	{
 		DbObjectContainer DbObjectContainer { get; set;}
-		string GetUpdateString(object o);
-		string GetInsertString(object o);
-		object ReadObject(string typeName, DbDataReader reader, string[] propertyNames);
+		int Update(object o, DbConnection connection);
+		int Insert(object o, DbConnection connection);
+		object ReadObject(Type type, DbDataReader reader, string[] propertyNames);
 	}
 }

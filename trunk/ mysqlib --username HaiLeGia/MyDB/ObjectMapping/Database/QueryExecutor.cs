@@ -232,14 +232,12 @@ namespace ObjectMapping.Database
 		{
 			using (var connection = connectionManager.GetUpdateConnection())
 			{
-				var command = connection.CreateCommand();
-				command.CommandText = dbFunctionHelper.GetUpdateString(dbObject);
 				if (isolationLevel != null)
 				{
 					var transaction = connection.BeginTransaction();
 					try
 					{
-						var result = command.ExecuteNonQuery();
+						var result = dbFunctionHelper.Update(dbObject, connection);
 						transaction.Commit();
 						return result;
 					}
@@ -251,7 +249,7 @@ namespace ObjectMapping.Database
 				}
 				else
 				{
-					return command.ExecuteNonQuery();
+					return dbFunctionHelper.Update(dbObject, connection);
 				}
 			}
 		}
@@ -260,14 +258,12 @@ namespace ObjectMapping.Database
 		{
 			using (var connection = connectionManager.GetUpdateConnection())
 			{
-				var command = connection.CreateCommand();
-				command.CommandText = dbFunctionHelper.GetInsertString(dbObject);
 				if (isolationLevel != null)
 				{
 					var transaction = connection.BeginTransaction();
 					try
 					{
-						var result = command.ExecuteNonQuery();
+						var result = dbFunctionHelper.Insert(dbObject, connection);
 						transaction.Commit();
 						return result;
 					}
@@ -279,7 +275,7 @@ namespace ObjectMapping.Database
 				}
 				else
 				{
-					return command.ExecuteNonQuery();
+					return dbFunctionHelper.Insert(dbObject, connection);
 				}
 			}
 		}
@@ -320,7 +316,7 @@ namespace ObjectMapping.Database
 			var type = typeof (T);
 			if (reader.Read())
 			{
-				return (T) dbFunctionHelper.ReadObject(type.Name, reader, propertyNames);
+				return (T) dbFunctionHelper.ReadObject(type, reader, propertyNames);
 			}
 			return null;
 		}
@@ -331,7 +327,7 @@ namespace ObjectMapping.Database
 			var type = typeof(T);
 			while (reader.Read())
 			{
-				result.Add((T) dbFunctionHelper.ReadObject(type.Name, reader, propertyNames));
+				result.Add((T) dbFunctionHelper.ReadObject(type, reader, propertyNames));
 			}
 			return result;
 		}
