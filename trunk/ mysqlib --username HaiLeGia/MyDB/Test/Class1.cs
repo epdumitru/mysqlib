@@ -1,6 +1,6 @@
 ﻿using System;
 using ObjectMapping;
-using Persistents;
+using ObjectMapping.Persistents;
 
 
 namespace Test
@@ -16,9 +16,10 @@ namespace Test
 		{
 			var dbObjectContainer = new DbObjectContainer();
 			dbObjectContainer.Register(typeof(UserData).Assembly);
-
-
-//			dbObjectContainer.QueryExecutor.Insert();
+            
+            UserData userData = new UserData();
+            
+			dbObjectContainer.QueryExecutor.Insert(userData, null);
 
 
 //			var formatter1 = new BinaryFormatter();
