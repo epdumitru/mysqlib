@@ -343,16 +343,16 @@ namespace ObjectMapping.Database
 					else
 					{
 						var rawData = DbSerializerHelper.ReadBlob(mappingField, reader);
-						object propertyValue = null;
 						if (rawData != null)
 						{
+							object propertyValue = null;
 							using (var stream = new MemoryStream(rawData))
 							{
 								var formatter = new BinaryFormatter();
 								propertyValue = formatter.Deserialize(stream);
 							}
+							propertyInfo.SetValue(o, propertyValue, null);	
 						}
-						propertyInfo.SetValue(o, propertyValue, null);	
 					}
 				}
 				else if (relations.ContainsKey(propertyName))
@@ -379,7 +379,21 @@ namespace ObjectMapping.Database
 						if (relationReader.Read())
 						{
 							var propertyValue = ReadObject(elementType, relationReader, classMetadata.AllPropertiesName, objectGraph, connection);
-							propertyInfo.SetValue(o, propertyValue, null);	
+							propertyInfo.SetValue(o, propertyValue, null);
+						}
+					}
+				}
+				else if (relation.RelationKind == RelationInfo.RELATION_1_N)
+				{
+					var elementType = propertyInfo.PropertyType;
+					var command = connection.CreateCommand();
+					command.CommandText = "SELECT * FROM " + relation.MappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
+					using (var relationReader = command.ExecuteReader(CommandBehavior.SingleRow))
+					{
+						if (relationReader.Read())
+						{
+							var propertyValue = ReadObject(elementType, relationReader, classMetadata.AllPropertiesName, objectGraph, connection);
+							propertyInfo.SetValue(o, propertyValue, null);
 						}
 					}
 				}
