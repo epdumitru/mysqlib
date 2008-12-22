@@ -1,6 +1,6 @@
 ﻿using System;
 using HashCacheClient.Service;
-using ObjectMapping.Persistents;
+using Persistents;
 
 namespace HashCacheClient
 {

@@ -4,7 +4,6 @@ using System.Data.Common;
 using System.IO;
 using System.Text;
 using MySql.Data.MySqlClient;
-using ObjectMapping.Persistents;
 
 namespace ObjectMapping.Database
 {
