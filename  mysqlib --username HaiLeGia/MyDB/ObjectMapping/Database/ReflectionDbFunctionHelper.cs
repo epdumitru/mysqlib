@@ -28,6 +28,7 @@ namespace ObjectMapping.Database
 			var result = 0;
 			if (o.IsDirty)
 			{
+				o.IsDirty = false;
 				var mappingTable = classMetadata.MappingTable;
 				var properties = classMetadata.Properties;
 				var command = connection.CreateCommand();
@@ -117,12 +118,15 @@ namespace ObjectMapping.Database
 			for (var i = 0; i < listCurrentPropertyValue.Count; i++)
 			{
 				var item = (IDbObject)listCurrentPropertyValue[i];
-				if (item == null || objectGraph.ContainsKey(item)) continue;
+				if (item == null) continue;
 				var itemId = item.Id;
 				if (persistentRelation.Contains(itemId))
 				{
-					Update(item, connection, objectGraph);
-					persistentRelation.Remove(itemId);
+					if (!objectGraph.ContainsKey(item))
+					{
+						Update(item, connection, objectGraph);
+					}
+					persistentRelation.Remove(itemId);	
 				}
 				else
 				{
@@ -130,7 +134,7 @@ namespace ObjectMapping.Database
 					{
 						Insert(item, connection, objectGraph);
 					}
-					else
+					else if (!objectGraph.ContainsKey(item))
 					{
 						Update(item, connection, objectGraph);
 					}
@@ -158,11 +162,14 @@ namespace ObjectMapping.Database
 			for (var i = 0; i < listCurrentPropertyValue.Count; i++)
 			{
 				var item = (IDbObject) listCurrentPropertyValue[i];
-				if (item == null || objectGraph.ContainsKey(item)) continue;
+				if (item == null) continue;
 				var itemId = item.Id;
 				if (persistentRelation.Contains(itemId))
 				{
-					Update(item, connection, objectGraph);
+					if (!objectGraph.ContainsKey(item))
+					{
+						Update(item, connection, objectGraph);	
+					}
 					persistentRelation.Remove(itemId);
 				}
 				else
@@ -171,7 +178,7 @@ namespace ObjectMapping.Database
 					{
 						Insert(item, connection, objectGraph);
 					}
-					else
+					else if (!objectGraph.ContainsKey(item))
 					{
 						Update(item, connection, objectGraph);
 					}
@@ -196,7 +203,7 @@ namespace ObjectMapping.Database
 		private void Update11Relation(IDictionary<IDbObject, long> objectGraph, IDbObject o, DbConnection connection, RelationInfo relation, DbCommand command, string mappingTable, List<long> persistentRelation, PropertyInfo propertyInfo)
 		{
 			var propertyValue = (IDbObject) propertyInfo.GetValue(o, null);
-			if (propertyValue == null || objectGraph.ContainsKey(propertyValue))
+			if (propertyValue == null)
 			{
 				return;
 			}
@@ -218,14 +225,21 @@ namespace ObjectMapping.Database
 					}
 				}
 			}
+			if (!objectGraph.ContainsKey(propertyValue))
+			{
+
+			}
 			var updateReference = true;
 			if (propertyValue.Id > 0)
 			{
 				if (persistentRelation.Count > 0 && propertyValue.Id == persistentRelation[0])
 				{
 					updateReference = false;
-				}	
-				Update(propertyValue, connection, objectGraph);
+				}
+				if (!objectGraph.ContainsKey(propertyValue))
+				{
+					Update(propertyValue, connection, objectGraph);	
+				}
 			}
 			else
 			{
