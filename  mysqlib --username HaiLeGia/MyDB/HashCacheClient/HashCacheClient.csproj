@@ -32,7 +32,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NTSockHashCacheServer.Service.ServiceCache, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\HashCacheServer\bin\Debug\NTSockHashCacheServer.Service.ServiceCache.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\HashCacheServer\bin\Release\NTSockHashCacheServer.Service.ServiceCache.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

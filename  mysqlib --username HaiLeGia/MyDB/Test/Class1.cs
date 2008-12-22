@@ -37,15 +37,33 @@ namespace Test
 			var dbObjectContainer = new DbObjectContainer();
 			dbObjectContainer.Register(typeof(UserData).Assembly);
             
-            UserData userData = new UserData();
+//            A a = new A();
+//			a.Id = 1;
+//			B b = new B();
+//			b.Name = "b";
+//			b.Id = 1;
+//			B b1 = new B();
+//			b1.Name = "b1";
+//			b1.Id = 2;
+//			B b2 = new B();
+//			b2.Name = "b2";
+//			b2.Id = 3;
+//			B b3 = new B();
+//			b3.Name = "b3";
+//			a.Bt = null;
+//			b.At = null;
+//			a.Str = "abc2";
+//			a.IsDirty = true;
+//			dbObjectContainer.QueryExecutor.Update(a, null);
+//			dbObjectContainer.QueryExecutor.Update(b, null);
 
-			userData.Other = userData; //dbObjectContainer.QueryExecutor.SelectById<UserData>(1, null, new string[] { "Username", "Password", "StrArray" });
-            userData.Username = "abcd";
-            userData.Password = "1234";
-            userData.StrArray = new string[] { "1", "2", "3" };
-             
-		    dbObjectContainer.QueryExecutor.Insert(userData, null);
-//			dbObjectContainer.QueryExecutor.Insert(userData, null);
+
+
+
+
+			Console.WriteLine("ok");
+//			dbObjectContainer.QueryExecutor.Insert(b, null);
+		    
 
 
 //			var formatter1 = new BinaryFormatter();
