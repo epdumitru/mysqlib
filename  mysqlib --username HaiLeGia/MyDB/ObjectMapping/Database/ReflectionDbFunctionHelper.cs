@@ -42,6 +42,7 @@ namespace ObjectMapping.Database
 				queryBuilder.Length = 0;
 				queryBuilder.Append(tmpString);
 				queryBuilder.Append(" WHERE Id = " + o.Id);
+				command.CommandText = queryBuilder.ToString();
 				foreach (var mappingInfo in properties.Values)
 				{
 					var mappingField = mappingInfo.MappingField;
@@ -115,31 +116,34 @@ namespace ObjectMapping.Database
 		private void UpdateNNRelation(IDictionary<IDbObject, long> objectGraph, IDbObject o, DbConnection connection, RelationInfo relation, DbCommand command, string mappingTable, List<long> persistentRelation, PropertyInfo propertyInfo)
 		{
 			var listCurrentPropertyValue = (IList)propertyInfo.GetValue(o, null);
-			for (var i = 0; i < listCurrentPropertyValue.Count; i++)
+			if (listCurrentPropertyValue != null)
 			{
-				var item = (IDbObject)listCurrentPropertyValue[i];
-				if (item == null) continue;
-				var itemId = item.Id;
-				if (persistentRelation.Contains(itemId))
+				for (var i = 0; i < listCurrentPropertyValue.Count; i++)
 				{
-					if (!objectGraph.ContainsKey(item))
+					var item = (IDbObject)listCurrentPropertyValue[i];
+					if (item == null) continue;
+					var itemId = item.Id;
+					if (persistentRelation.Contains(itemId))
 					{
-						Update(item, connection, objectGraph);
+						if (!objectGraph.ContainsKey(item))
+						{
+							Update(item, connection, objectGraph);
+						}
+						persistentRelation.Remove(itemId);
 					}
-					persistentRelation.Remove(itemId);	
-				}
-				else
-				{
-					if (itemId == 0)
+					else
 					{
-						Insert(item, connection, objectGraph);
+						if (itemId == 0)
+						{
+							Insert(item, connection, objectGraph);
+						}
+						else if (!objectGraph.ContainsKey(item))
+						{
+							Update(item, connection, objectGraph);
+						}
+						command.CommandText = "INSERT INTO " + mappingTable + "  ( `" + relation.OriginalKey + "`, `" + relation.PartnerKey + "`) VALUES (" + o.Id + ", " + item.Id + ")";
+						command.ExecuteNonQuery();
 					}
-					else if (!objectGraph.ContainsKey(item))
-					{
-						Update(item, connection, objectGraph);
-					}
-					command.CommandText = "INSERT INTO " + mappingTable + "  ( `" + relation.OriginalKey + "`, `" + relation.PartnerKey + "`) VALUES (" + o.Id + ", " + item.Id + ")";
-					command.ExecuteNonQuery();
 				}
 			}
 			if (persistentRelation.Count > 0)
@@ -159,31 +163,34 @@ namespace ObjectMapping.Database
 		private void Update1NRelation(IDictionary<IDbObject, long> objectGraph, IDbObject o, DbConnection connection, RelationInfo relation, DbCommand command, string mappingTable, List<long> persistentRelation, PropertyInfo propertyInfo)
 		{
 			var listCurrentPropertyValue = (IList) propertyInfo.GetValue(o, null);
-			for (var i = 0; i < listCurrentPropertyValue.Count; i++)
+			if (listCurrentPropertyValue != null)
 			{
-				var item = (IDbObject) listCurrentPropertyValue[i];
-				if (item == null) continue;
-				var itemId = item.Id;
-				if (persistentRelation.Contains(itemId))
+				for (var i = 0; i < listCurrentPropertyValue.Count; i++)
 				{
-					if (!objectGraph.ContainsKey(item))
+					var item = (IDbObject)listCurrentPropertyValue[i];
+					if (item == null) continue;
+					var itemId = item.Id;
+					if (persistentRelation.Contains(itemId))
 					{
-						Update(item, connection, objectGraph);	
+						if (!objectGraph.ContainsKey(item))
+						{
+							Update(item, connection, objectGraph);
+						}
+						persistentRelation.Remove(itemId);
 					}
-					persistentRelation.Remove(itemId);
-				}
-				else
-				{
-					if (itemId == 0)
+					else
 					{
-						Insert(item, connection, objectGraph);
+						if (itemId == 0)
+						{
+							Insert(item, connection, objectGraph);
+						}
+						else if (!objectGraph.ContainsKey(item))
+						{
+							Update(item, connection, objectGraph);
+						}
+						command.CommandText = "UPDATE " + mappingTable + " SET `" + relation.OriginalKey + "` = " + o.Id + " WHERE Id = " + item.Id;
+						command.ExecuteNonQuery();
 					}
-					else if (!objectGraph.ContainsKey(item))
-					{
-						Update(item, connection, objectGraph);
-					}
-					command.CommandText = "UPDATE " + mappingTable + " SET `" + relation.OriginalKey + "` = " + o.Id + " WHERE Id = " + item.Id;
-					command.ExecuteNonQuery();
 				}
 			}
 			if (persistentRelation.Count > 0)
@@ -203,53 +210,43 @@ namespace ObjectMapping.Database
 		private void Update11Relation(IDictionary<IDbObject, long> objectGraph, IDbObject o, DbConnection connection, RelationInfo relation, DbCommand command, string mappingTable, List<long> persistentRelation, PropertyInfo propertyInfo)
 		{
 			var propertyValue = (IDbObject) propertyInfo.GetValue(o, null);
-			if (propertyValue == null)
+			if (propertyValue != null)
 			{
-				return;
-			}
-			var updateOldPersistent = false;
-			if (persistentRelation.Count > 0)
-			{
-				if (propertyValue.Id != persistentRelation[0])
+				var itemId = propertyValue.Id;
+				if (persistentRelation.Contains(itemId))
 				{
-					updateOldPersistent = true;
-				}
-			}
-			if (updateOldPersistent)
-			{
-				if (persistentRelation.Count > 0)
-				{
-					for (var i = 0; i < persistentRelation.Count; i++)
+					persistentRelation.Remove(propertyValue.Id);
+					if (!objectGraph.ContainsKey(propertyValue))
 					{
-						command.CommandText = "UPDATE " + mappingTable + " SET `" + relation.OriginalKey + "`= NULL WHERE Id = " + persistentRelation[i];
+						Update(propertyValue, connection, objectGraph);	
 					}
 				}
-			}
-			if (!objectGraph.ContainsKey(propertyValue))
-			{
-
-			}
-			var updateReference = true;
-			if (propertyValue.Id > 0)
-			{
-				if (persistentRelation.Count > 0 && propertyValue.Id == persistentRelation[0])
+				else
 				{
-					updateReference = false;
-				}
-				if (!objectGraph.ContainsKey(propertyValue))
-				{
-					Update(propertyValue, connection, objectGraph);	
+					if (itemId == 0)
+					{
+						Insert(propertyValue, connection, objectGraph);
+					}
+					else if (!objectGraph.ContainsKey(propertyValue))
+					{
+						Update(propertyValue, connection, objectGraph);
+					}
+					command.CommandText = "UPDATE " + mappingTable + " SET `" + relation.OriginalKey + "` = " + o.Id + " WHERE Id = " + propertyValue.Id;
+					command.ExecuteNonQuery();
 				}
 			}
-			else
+			if (persistentRelation.Count > 0)
 			{
-				Insert(propertyValue, connection, objectGraph);
-			}
-			if (updateReference)
-			{
-				command.CommandText = "UPDATE " + mappingTable + " SET `" + relation.OriginalKey + "` = " + o.Id + " WHERE Id = " + propertyValue.Id;
+				command.CommandText = "UPDATE " + mappingTable + " SET `" + relation.OriginalKey + "` = NULL WHERE Id = @id";
+				command.Prepare();
+				command.Parameters.Add(new MySqlParameter("@Id", persistentRelation[0]));
 				command.ExecuteNonQuery();
-			}
+				for (var i = 1; i < persistentRelation.Count; i++)
+				{
+					command.Parameters["@Id"].Value = persistentRelation[i];
+					command.ExecuteNonQuery();
+				}
+			}		
 		}
 
 		public long Insert(IDbObject o, DbConnection connection, IDictionary<IDbObject, long> objectGraph)
