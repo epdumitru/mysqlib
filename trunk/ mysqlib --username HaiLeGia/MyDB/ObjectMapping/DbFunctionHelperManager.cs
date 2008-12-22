@@ -250,7 +250,7 @@ namespace ObjectMapping
 						.stloc(listCurrentDbObjectLocal)
 						;
 				}
-				
+
 			}
 		}
 
