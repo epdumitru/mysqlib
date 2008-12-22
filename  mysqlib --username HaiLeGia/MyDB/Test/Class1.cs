@@ -17,6 +17,10 @@ namespace Test
 
 		public static void Main(string[] args)
 		{
+//			for (int i = 0; i < len; i++)
+//			{
+//				Console.WriteLine(i);
+//			}
 //			var dbObjectContainer = new DbObjectContainer();
 //			dbObjectContainer.Register(typeof(UserData).Assembly);
             
@@ -75,26 +79,26 @@ namespace Test
 			
 //            Console.ReadKey();
 
-			var assemblyBuiler = new AssemblyBuilderHelper("Test.dll");
-			var typeBuilder = assemblyBuiler.DefineType("Test", typeof (object));
-			var testMethodEmit = typeBuilder.DefineMethod("Test", MethodAttributes.Public, typeof (void)).Emitter;
-			var memoryStreamLocal = testMethodEmit.DeclareLocal(typeof (MemoryStream));
-			testMethodEmit
-				.newobj(typeof (MemoryStream), Type.EmptyTypes)
-				.stloc(memoryStreamLocal);
-			var tryFinallyLabel = testMethodEmit.BeginExceptionBlock();
-			testMethodEmit
-				.ldstr("Hello")
-				.call(typeof (Console).GetMethod("WriteLine", new[] {typeof (string)}))
-				.BeginFinallyBlock()
-				.ldloc(memoryStreamLocal)
-				.call(typeof (IDisposable).GetMethod("Dispose"))
-				.EndExceptionBlock()
-				.ret();
-			typeBuilder.Create();
-			assemblyBuiler.Save();
-			Console.WriteLine("OK");
-			Console.ReadKey();
+//			var assemblyBuiler = new AssemblyBuilderHelper("Test.dll");
+//			var typeBuilder = assemblyBuiler.DefineType("Test", typeof (object));
+//			var testMethodEmit = typeBuilder.DefineMethod("Test", MethodAttributes.Public, typeof (void)).Emitter;
+//			var memoryStreamLocal = testMethodEmit.DeclareLocal(typeof (MemoryStream));
+//			testMethodEmit
+//				.newobj(typeof (MemoryStream), Type.EmptyTypes)
+//				.stloc(memoryStreamLocal);
+//			var tryFinallyLabel = testMethodEmit.BeginExceptionBlock();
+//			testMethodEmit
+//				.ldstr("Hello")
+//				.call(typeof (Console).GetMethod("WriteLine", new[] {typeof (string)}))
+//				.BeginFinallyBlock()
+//				.ldloc(memoryStreamLocal)
+//				.call(typeof (IDisposable).GetMethod("Dispose"))
+//				.EndExceptionBlock()
+//				.ret();
+//			typeBuilder.Create();
+//			assemblyBuiler.Save();
+//			Console.WriteLine("OK");
+//			Console.ReadKey();
 				
 		}
 	}
