@@ -31,6 +31,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NTSockv3Server", "NTSockv3S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectMapping", "ObjectMapping\ObjectMapping.csproj", "{3D03BD67-1D68-469D-926F-85C267C11426}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HashCacheClient", "HashCacheClient\HashCacheClient.csproj", "{BC0EC2AE-3DF8-424F-A2D9-56C877B32305}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HashCacheServer", "HashCacheServer\HashCacheServer.csproj", "{BE083C5C-3A19-459E-8D94-2C855683CC18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +133,18 @@ Global
 		{3D03BD67-1D68-469D-926F-85C267C11426}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D03BD67-1D68-469D-926F-85C267C11426}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D03BD67-1D68-469D-926F-85C267C11426}.Release|x86.ActiveCfg = Release|Any CPU
+		{BC0EC2AE-3DF8-424F-A2D9-56C877B32305}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC0EC2AE-3DF8-424F-A2D9-56C877B32305}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC0EC2AE-3DF8-424F-A2D9-56C877B32305}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BC0EC2AE-3DF8-424F-A2D9-56C877B32305}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC0EC2AE-3DF8-424F-A2D9-56C877B32305}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC0EC2AE-3DF8-424F-A2D9-56C877B32305}.Release|x86.ActiveCfg = Release|Any CPU
+		{BE083C5C-3A19-459E-8D94-2C855683CC18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE083C5C-3A19-459E-8D94-2C855683CC18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE083C5C-3A19-459E-8D94-2C855683CC18}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BE083C5C-3A19-459E-8D94-2C855683CC18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE083C5C-3A19-459E-8D94-2C855683CC18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE083C5C-3A19-459E-8D94-2C855683CC18}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
