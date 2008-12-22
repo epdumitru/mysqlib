@@ -17,11 +17,12 @@ namespace ObjectMapping.Database
 		protected Type type;
 		protected string mappingTable;
 		protected IList<string> propertyNames;
-
+		private bool selectAll;
 		public SelectQuery(Type type, int top, int limit, params string[] propertyNames)
 		{
 			this.type = type;
-			var classMetadatas = type.GetCustomAttributes(typeof(PersistentAttribute), true);
+            var classMetadatas = type.GetCustomAttributes(typeof(PersistentAttribute), true);
+			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
 			mappingTable = ((PersistentAttribute)classMetadatas[0]).MappingTable;
 			this.top = top;
 			this.limit = limit;
@@ -38,10 +39,12 @@ namespace ObjectMapping.Database
 					tempProperties.Add("UpdateTime");
 				}
 				this.propertyNames = tempProperties;
+				selectAll = false;
 			}
 			else
 			{
-				this.propertyNames = propertyNames;	
+				selectAll = true;
+				this.propertyNames = classMetadata.AllPropertiesName;	
 			}
 			
 		}
@@ -74,7 +77,7 @@ namespace ObjectMapping.Database
 			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
 			var properties = classMetadata.Properties;
 			var str = new StringBuilder("SELECT ");//"* FROM " + mappingTable + " ");
-			if (propertyNames == ALL_PROPS)
+			if (selectAll)
 			{
 				str.Append("* ");	
 			}
