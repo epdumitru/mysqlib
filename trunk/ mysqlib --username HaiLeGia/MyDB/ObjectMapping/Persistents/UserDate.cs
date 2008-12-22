@@ -12,8 +12,8 @@ namespace ObjectMapping.Persistents
         private long id;
         private string username;
         private string password;
-//        private UserData other;
-//        private string[] strArray;
+        private UserData other;
+        private string[] strArray;
     	private long updateTime;
 
         public long Id
@@ -40,18 +40,18 @@ namespace ObjectMapping.Persistents
             set { password = value; }
         }
 
-//        [OneToOneRelation(OriginalKey = "Id")]
-//        public UserData Other
-//        {
-//            get { return other; }
-//            set { other = value; }
-//        }
+        [OneToOneRelation(OriginalKey = "Id")]
+        public UserData Other
+        {
+            get { return other; }
+            set { other = value; }
+        }
 
-//        public string[] StrArray
-//        {
-//            get { return strArray; }
-//            set { strArray = value; }
-//        }
+        public string[] StrArray
+        {
+            get { return strArray; }
+            set { strArray = value; }
+        }
 
     	#region Implementation of IDbObject
 
