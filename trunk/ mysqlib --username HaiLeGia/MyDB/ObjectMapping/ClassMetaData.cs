@@ -146,6 +146,7 @@ namespace ObjectMapping
 	{
 		private Dictionary<string, MappingInfo> properties;
 		private Dictionary<string, RelationInfo> relationProperties;
+		private IList<string> allPropertiesName;
 		private PropertyInfo primaryKey;
 		private string mappingTable;
 		private string mappingPrimaryKey;
@@ -203,7 +204,7 @@ namespace ObjectMapping
 
 		public IList<string> AllPropertiesName
 		{
-			get { return null; }
+			get { return allPropertiesName; }
 		}
 
 		private void Init()
@@ -220,6 +221,7 @@ namespace ObjectMapping
 								: persistentAttr.MappingTable;
 			properties = new Dictionary<string, MappingInfo>();
 			relationProperties = new Dictionary<string, RelationInfo>();
+			allPropertiesName = new List<string>();
 		}
 
 		public void Create()
@@ -233,7 +235,7 @@ namespace ObjectMapping
 				{
 					continue;
 				}
-
+				allPropertiesName.Add(propertyInfo.Name);
 				var propertyType = propertyInfo.PropertyType;
 				if (propertyType.IsPrimitive || propertyType == typeof(DateTime) || propertyType == typeof(decimal) || propertyType == typeof(string))
 				{

@@ -312,14 +312,13 @@ namespace ObjectMapping.Database
 			return o.Id;
 		}
 
-		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames, IDictionary<string, IDbObject> objectGraph, DbConnection connection)
+		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames, IDictionary<string, IDbObject> objectGraph)
 		{
 			var o = (IDbObject) Activator.CreateInstance(type);
 			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
 			var properties = classMetadata.Properties;
 			var relations = classMetadata.RelationProperties;
 			o.Id = reader.GetInt64(reader.GetOrdinal("Id"));
-			IList<RelationInfo> pendingRelations = new List<RelationInfo>();
 			string key = type.FullName + o.Id;
 			if (objectGraph.ContainsKey(key))
 			{
@@ -357,45 +356,75 @@ namespace ObjectMapping.Database
 				}
 				else if (relations.ContainsKey(propertyName))
 				{
-					pendingRelations.Add(relations[propertyName]);
+					using (var connection = dbObjectContainer.ConnectionManager.GetReadConnection())
+					{
+						var relation = relations[propertyName];
+						var propertyInfo = relation.PropertyInfo;
+						if (relation.RelationKind == RelationInfo.RELATION_1_1)
+						{
+							var elementType = propertyInfo.PropertyType;
+							var command = connection.CreateCommand();
+							command.CommandText = "SELECT * FROM " + relation.MappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
+							using (var relationReader = command.ExecuteReader(CommandBehavior.SingleRow))
+							{
+								if (relationReader.Read())
+								{
+									var propertyValue = ReadObject(elementType, relationReader, classMetadata.AllPropertiesName, objectGraph);
+									propertyInfo.SetValue(o, propertyValue, null);
+								}
+							}
+						}
+						else if (relation.RelationKind == RelationInfo.RELATION_1_N)
+						{
+							var elementType = propertyInfo.PropertyType.GetGenericArguments()[0];
+							var listObject = Activator.CreateInstance(typeof (List<>).MakeGenericType(elementType));
+							var addMethod = typeof (ICollection<>).MakeGenericType(elementType).GetMethod("Add");
+							var command = connection.CreateCommand();
+							command.CommandText = "SELECT * FROM " + relation.MappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
+							using (var relationReader = command.ExecuteReader())
+							{
+								while (relationReader.Read())
+								{
+									var propertyValue = ReadObject(elementType, relationReader, classMetadata.AllPropertiesName, objectGraph);
+									addMethod.Invoke(listObject, new[] {propertyValue});
+								}
+							}
+							if (((IList) listObject).Count > 0)
+							{
+								propertyInfo.SetValue(o, listObject, null);
+							}
+						}
+						else if (relation.RelationKind == RelationInfo.RELATION_N_N)
+						{
+							var elementType = propertyInfo.PropertyType.GetGenericArguments()[0];
+							var listObject = Activator.CreateInstance(typeof(List<>).MakeGenericType(elementType));
+							var addMethod = typeof(ICollection<>).MakeGenericType(elementType).GetMethod("Add");
+							var command = connection.CreateCommand();
+							command.CommandText = "SELECT `" + relation.PartnerKey +  "` FROM " + relation.MappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
+							var otherIds = new List<long>();
+							using (var relationReader = command.ExecuteReader())
+							{
+								while (relationReader.Read())
+								{
+									otherIds.Add(relationReader.GetInt64(0));
+								}
+							}
+							for (var j = 0; j < otherIds.Count; j++)
+							{
+								var propertyValue = dbObjectContainer.QueryExecutor.SelectById(elementType, otherIds[j], null,
+								                                                               SelectQuery.ALL_PROPS);
+								addMethod.Invoke(listObject, new[] { propertyValue });
+							}
+							if (((IList)listObject).Count > 0)
+							{
+								propertyInfo.SetValue(o, listObject, null);
+							}						
+						}
+					}
 				}
 				else
 				{
 					throw new ArgumentException("Cannot regconize property: " + propertyName);
-				}
-			}
-			reader.Close();
-			for (var i = 0; i < pendingRelations.Count; i++)
-			{
-				var relation = pendingRelations[i];
-				var propertyInfo = relation.PropertyInfo;
-				if (relation.RelationKind == RelationInfo.RELATION_1_1)
-				{
-					var elementType = propertyInfo.PropertyType;
-					var command = connection.CreateCommand();
-					command.CommandText = "SELECT * FROM " + relation.MappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
-					using (var relationReader = command.ExecuteReader(CommandBehavior.SingleRow))
-					{
-						if (relationReader.Read())
-						{
-							var propertyValue = ReadObject(elementType, relationReader, classMetadata.AllPropertiesName, objectGraph, connection);
-							propertyInfo.SetValue(o, propertyValue, null);
-						}
-					}
-				}
-				else if (relation.RelationKind == RelationInfo.RELATION_1_N)
-				{
-					var elementType = propertyInfo.PropertyType;
-					var command = connection.CreateCommand();
-					command.CommandText = "SELECT * FROM " + relation.MappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
-					using (var relationReader = command.ExecuteReader(CommandBehavior.SingleRow))
-					{
-						if (relationReader.Read())
-						{
-							var propertyValue = ReadObject(elementType, relationReader, classMetadata.AllPropertiesName, objectGraph, connection);
-							propertyInfo.SetValue(o, propertyValue, null);
-						}
-					}
 				}
 			}
 			return o;

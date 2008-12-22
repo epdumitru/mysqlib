@@ -112,7 +112,14 @@ namespace ObjectMapping.Database
 
 		public virtual T SelectById<T>(long id, IsolationLevel? isolationLevel, params string[] propertyNames) where T : class 
 		{
+			var type = typeof(T);
+			return (T) SelectById(type, id, isolationLevel, propertyNames);
+		}
+
+		public object SelectById(Type type, long id, IsolationLevel? isolationLevel, params string[] propertyNames)
+		{
 			IList<string> selectProperties;
+			var metadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
 			if (propertyNames != SelectQuery.ALL_PROPS)
 			{
 				var tempSelectProperties = new List<string>(propertyNames);
@@ -128,10 +135,8 @@ namespace ObjectMapping.Database
 			}
 			else
 			{
-				selectProperties = propertyNames;
+				selectProperties = metadata.AllPropertiesName;
 			}
-			var type = typeof (T);
-			var metadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
 			var properties = metadata.Properties;
 			var mappingTable = metadata.MappingTable;
 			using (var connection = connectionManager.GetReadConnection())
@@ -148,7 +153,7 @@ namespace ObjectMapping.Database
 					{
 						if (properties.ContainsKey(selectProperties[i]))
 						{
-							str.Append(selectProperties[i] + ", ");	
+							str.Append(selectProperties[i] + ", ");
 						}
 					}
 					var tmpString = str.ToString(0, str.Length - 2);
@@ -176,7 +181,7 @@ namespace ObjectMapping.Database
 				{
 					reader = command.ExecuteReader(CommandBehavior.SingleRow);
 				}
-				return CreateObject<T>(reader, selectProperties, connection);
+				return CreateObject(type, reader, selectProperties, connection);
 			}
 		}
 
@@ -281,7 +286,16 @@ namespace ObjectMapping.Database
 			var type = typeof (T);
 			if (reader.Read())
 			{
-				return (T) dbFunctionHelper.ReadObject(type, reader, propertyNames, new Dictionary<string, IDbObject>(), connection);
+				return (T) dbFunctionHelper.ReadObject(type, reader, propertyNames, new Dictionary<string, IDbObject>());
+			}
+			return null;
+		}
+
+		private object CreateObject(Type type, DbDataReader reader, IList<string> propertyNames, DbConnection connection)
+		{
+			if (reader.Read())
+			{
+				return dbFunctionHelper.ReadObject(type, reader, propertyNames, new Dictionary<string, IDbObject>());
 			}
 			return null;
 		}
@@ -292,7 +306,7 @@ namespace ObjectMapping.Database
 			var type = typeof(T);
 			while (reader.Read())
 			{
-				result.Add((T) dbFunctionHelper.ReadObject(type, reader, propertyNames, new Dictionary<string, IDbObject>(), connection));
+				result.Add((T) dbFunctionHelper.ReadObject(type, reader, propertyNames, new Dictionary<string, IDbObject>()));
 			}
 			return result;
 		}

@@ -36,6 +36,11 @@ namespace ObjectMapping
 		private IQueryExecutor queryExecutor;
 		private ITableExecutor tableExecutor;
 
+		public IConnectionManager ConnectionManager
+		{
+			get { return connectionManager; }
+		}
+
 		internal ITableExecutor TableExecutor
 		{
 			get { return tableExecutor; }
