@@ -50,10 +50,10 @@ namespace ObjectMapping
 			return dbFunctionHelper.Insert(o, connection, objectGraph);
 		}
 
-		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames, IDictionary<string, IDbObject> objectGraph)
+		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames, IDictionary<string, IDbObject> objectGraph, DbConnection connection)
 		{
 			var dbFunctionHelper = GetDbFunctionHelper(type);
-			return dbFunctionHelper.ReadObject(type, reader, propertyNames, objectGraph);
+			return dbFunctionHelper.ReadObject(type, reader, propertyNames, objectGraph, connection);
 		}
 
 		#endregion

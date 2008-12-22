@@ -71,6 +71,8 @@ namespace ObjectMapping.Database
 
 		public virtual string ToSqlString()
 		{
+			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
+			var properties = classMetadata.Properties;
 			var str = new StringBuilder("SELECT ");//"* FROM " + mappingTable + " ");
 			if (propertyNames == ALL_PROPS)
 			{
@@ -80,7 +82,10 @@ namespace ObjectMapping.Database
 			{
 				for (var i = 0; i < propertyNames.Count; i++)
 				{
-					str.Append(propertyNames[i] + ", ");
+					if (properties.ContainsKey(propertyNames[i]))
+					{
+						str.Append(propertyNames[i] + ", ");	
+					}
 				}
 				var tmpString = str.ToString(0, str.Length - 2);
 				str.Length = 0;
