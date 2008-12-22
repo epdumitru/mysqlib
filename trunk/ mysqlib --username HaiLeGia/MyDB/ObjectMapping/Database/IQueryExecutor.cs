@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using ObjectMapping.Database.Connections;
 
 namespace ObjectMapping.Database
@@ -16,6 +15,7 @@ namespace ObjectMapping.Database
 		                        params string[] propertyNames) where T : class;
 		int Update(IDbObject dbObject, IsolationLevel? isolationLevel);
 		int Insert(IDbObject dbObject, IsolationLevel? isolationLevel);
+		int Insert(IDbObject dbObject, IsolationLevel? isolationLevel, long referencedId, string referencedColumn);
 		long Count<T>(IsolationLevel? isolationLevel);
 		
 	}

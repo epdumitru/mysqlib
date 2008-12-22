@@ -132,6 +132,11 @@ namespace ObjectMapping.Database
 			return null;
 		}
 
+		public int Insert(IDbObject @object, DbConnection connection, long id, string column)
+		{
+			return 0;
+		}
+
 		#endregion
 	}
 }
