@@ -194,6 +194,64 @@ namespace ObjectMapping
 				.call(typeof(IDbObject).GetMethod("set_IsDirty"))
 				.MarkLabel(objectNotDirtyLabel);
 
+			//Update relation
+			var relations = classMetadata.RelationProperties;
+			foreach (var relationInfo in relations.Values)
+			{
+				var propertyInfo = relationInfo.PropertyInfo;
+				var propertyType = propertyInfo.PropertyType;
+				var elementType = propertyType.IsGenericType ? propertyType.GetGenericArguments()[0] : propertyType;
+				var listPersistentDbObjectLocal = methodEmit.DeclareLocal(typeof(IList<long>));
+				var listCurrentType = typeof (List<>).MakeGenericType(elementType);
+				var addElementMethod = typeof (ICollection<>).MakeGenericType(elementType).GetMethod("Add");
+				var listConstructorMethod =
+					listCurrentType.GetConstructor(new[] {typeof (IEnumerable<>).MakeGenericType(elementType)});
+				var listCurrentDbObjectLocal = methodEmit.DeclareLocal(listCurrentType);
+				var mappingColumn = relationInfo.PartnerKey;
+				var relationCommandLocal = methodEmit.DeclareLocal(typeof (DbCommand));
+				var readerLocal = methodEmit.DeclareLocal(typeof (DbDataReader));
+				var relationTimeInfoLocal = methodEmit.DeclareLocal(typeof (TimeRelationInfo));
+				var commandText = "SELECT " + mappingColumn + " FROM " + mappingTable + " WHERE Id = @Id";
+				methodEmit
+					.ldarg_2
+					.call(typeof (DbConnection).GetMethod("CreateCommand"))
+					.stloc(relationCommandLocal)
+					.ldloc(relationCommandLocal)
+					.ldstr(commandText)
+					.call(typeof (DbCommand).GetMethod("set_CommandText"))
+					.ldloc(relationCommandLocal)
+					.call(typeof(DbCommand).GetMethod("ExecuteReader"))
+					.stloc(readerLocal)
+					.ldstr(mappingColumn)
+					.ldloc(readerLocal)
+					.call(typeof(DbSerializerHelper).GetMethod("ReadRelationTimeInfo"))
+					.stloc(relationTimeInfoLocal)
+					.ldloc(relationTimeInfoLocal)
+					.ldfld(typeof(TimeRelationInfo).GetField("idList"))
+					.stloc(listPersistentDbObjectLocal)
+					;
+				if (relationInfo.RelationKind == RelationInfo.RELATION_1_1)
+				{
+					methodEmit
+						.newobj(listCurrentType, Type.EmptyTypes)
+						.stloc(listCurrentDbObjectLocal)
+						.ldloc(listCurrentDbObjectLocal)
+						.ldarg_1
+						.call(propertyInfo.GetGetMethod())
+						.call(addElementMethod)
+						;
+				}
+				else
+				{
+					methodEmit
+						.ldarg_1
+						.call(propertyInfo.GetGetMethod())
+						.newobj(listConstructorMethod)
+						.stloc(listCurrentDbObjectLocal)
+						;
+				}
+				
+			}
 		}
 
 		private void CreateProperty(TypeBuilderHelper typeBuilderHelper)
