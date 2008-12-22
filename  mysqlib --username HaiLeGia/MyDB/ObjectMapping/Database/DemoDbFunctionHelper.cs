@@ -132,7 +132,7 @@ namespace ObjectMapping.Database
 			return null;
 		}
 
-		public int Insert(IDbObject @object, DbConnection connection, long id, string column)
+		public int Insert(IDbObject @object, DbConnection connection, long referenceId, string referenceColumn)
 		{
 			return 0;
 		}
