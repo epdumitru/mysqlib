@@ -33,13 +33,13 @@ namespace ObjectMapping
 				{
 					relationKind = RELATION_1_1;
 					partnerMetadata = ClassMetaDataManager.Instace.GetClassMetaData(propertyType);
-					partnerKey = originalMetadata.Type.Name + ((OneToOneRelationAttribute) relationAttr).PartnerKey;
+					originalKey = originalMetadata.Type.Name + ((OneToOneRelationAttribute) relationAttr).OriginalKey;
 					mappingTable = partnerMetadata.MappingTable;
 				}
 				else if (relationAttr is OneToManyRelationAttribute)
 				{
 					relationKind = RELATION_1_N;
-					partnerKey = originalMetadata.Type.Name + ((OneToManyRelationAttribute)relationAttr).PartnerKey;
+					originalKey = originalMetadata.Type.Name + ((OneToManyRelationAttribute)relationAttr).OriginalKey;
 					partnerMetadata = ClassMetaDataManager.Instace.GetClassMetaData(propertyType.GetGenericArguments()[0]);
 					mappingTable = partnerMetadata.MappingTable;
 				}

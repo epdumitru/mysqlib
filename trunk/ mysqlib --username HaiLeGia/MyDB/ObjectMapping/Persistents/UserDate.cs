@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,7 +39,7 @@ namespace ObjectMapping.Persistents
             set { password = value; }
         }
 
-        [OneToOneRelation(PartnerKey = "Id")]
+        [OneToOneRelation(OriginalKey = "Id")]
         public UserData Other
         {
             get { return other; }

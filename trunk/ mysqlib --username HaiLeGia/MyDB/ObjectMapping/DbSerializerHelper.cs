@@ -1318,61 +1318,75 @@ namespace ObjectMapping
 
 		public static byte[] ReadBlob(string columnName, DbDataReader reader)
 		{
-			using (var stream = new MemoryStream())
+			try
 			{
-				var buffer = new byte[1024];
-				using (reader)
+				using (var stream = new MemoryStream())
 				{
-					var read = reader.GetBytes(reader.GetOrdinal(columnName), 0, buffer, 0, buffer.Length);
-					stream.Write(buffer, 0, (int)read);
-					while (read == buffer.Length)
+					var buffer = new byte[1024];
+					using (reader)
 					{
-						try
+						var read = reader.GetBytes(reader.GetOrdinal(columnName), 0, buffer, 0, buffer.Length);
+						stream.Write(buffer, 0, (int)read);
+						while (read == buffer.Length)
 						{
-							read = reader.GetBytes(reader.GetOrdinal(columnName), stream.Position, buffer, 0, buffer.Length);
-							stream.Write(buffer, 0, (int)read);
+							try
+							{
+								read = reader.GetBytes(reader.GetOrdinal(columnName), stream.Position, buffer, 0, buffer.Length);
+								stream.Write(buffer, 0, (int)read);
+							}
+							catch (Exception e)
+							{
+								Logger.Log.WriteLog("Exception when read blob data: " + e);
+							}
 						}
-						catch (Exception e)
-						{
-							Logger.Log.WriteLog("Exception when read blob data: " + e);
-						}
-					}	
-				}
-				return stream.ToArray();
+					}
+					return stream.ToArray();
+				}	
+			}
+			catch
+			{
+				return null;
 			}
 		}
 
 		public static TimeRelationInfo ReadRelationTimeInfo(string columnName, DbDataReader reader)
 		{
-			using (var stream = new MemoryStream())
+			try
 			{
-				var buffer = new byte[1024];
-				using (reader)
+				using (var stream = new MemoryStream())
 				{
-					var read = reader.GetBytes(reader.GetOrdinal(columnName), 0, buffer, 0, buffer.Length);
-					stream.Write(buffer, 0, (int)read);
-					while (read == buffer.Length)
+					var buffer = new byte[1024];
+					using (reader)
 					{
-						try
+						var read = reader.GetBytes(reader.GetOrdinal(columnName), 0, buffer, 0, buffer.Length);
+						stream.Write(buffer, 0, (int)read);
+						while (read == buffer.Length)
 						{
-							read = reader.GetBytes(reader.GetOrdinal(columnName), stream.Position, buffer, 0, buffer.Length);
-							stream.Write(buffer, 0, (int)read);
+							try
+							{
+								read = reader.GetBytes(reader.GetOrdinal(columnName), stream.Position, buffer, 0, buffer.Length);
+								stream.Write(buffer, 0, (int)read);
+							}
+							catch (Exception e)
+							{
+								Logger.Log.WriteLog("Exception when read blob data: " + e);
+							}
 						}
-						catch (Exception e)
-						{
-							Logger.Log.WriteLog("Exception when read blob data: " + e);
-						}
-					}	
+					}
+					if (stream.Length > 0)
+					{
+						stream.Position = 0;
+						var dbSerilizerHelper = new DbSerializerHelper(new BinaryReader(stream));
+						var result = new TimeRelationInfo { idList = dbSerilizerHelper.ReadListInt64() };
+						return result;
+					}
 				}
-				if (stream.Length > 0)
-				{
-					stream.Position = 0;
-					var dbSerilizerHelper = new DbSerializerHelper(new BinaryReader(stream));
-					var result = new TimeRelationInfo { idList = dbSerilizerHelper.ReadListInt64() };
-					return result;
-				}
+				return null;
 			}
-			return null;
+			catch
+			{
+				return null;
+			}
 		}
 	}
 }

@@ -19,7 +19,7 @@ namespace ObjectMapping.Database
 			set { dbObjectContainer = value; }
 		}
 
-		public int Update(IDbObject o, DbConnection connection, long updateTime)
+		public int Update(IDbObject o, DbConnection connection, IDictionary<IDbObject, long> objectGraph)
 		{
 			int result = 0;
 			var command = connection.CreateCommand();
@@ -43,13 +43,13 @@ namespace ObjectMapping.Database
 				result = command.ExecuteNonQuery();
 				if (u.Other != null)
 				{
-					result += Update(u.Other, connection, updateTime);
+					result += Update(u.Other, connection, objectGraph);
 				}
 			}
             return result;
 		}
 
-		public int Insert(IDbObject o, DbConnection connection)
+		public long Insert(IDbObject o, DbConnection connection, IDictionary<IDbObject, long> objectGraph)
 		{
 		    int result = 0;
 		    var command = connection.CreateCommand();
@@ -72,14 +72,14 @@ namespace ObjectMapping.Database
                 result = command.ExecuteNonQuery();
                 if (u.Other != null)
                 {
-                    result += Update(u.Other, connection, -1);
+                    result += Update(u.Other, connection, objectGraph);
                 }
             }
             return result;
 
 		}
 
-		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames)
+		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames, IDictionary<string, IDbObject> objectGraph)
 		{
 			if (type == typeof(UserData))
 			{
