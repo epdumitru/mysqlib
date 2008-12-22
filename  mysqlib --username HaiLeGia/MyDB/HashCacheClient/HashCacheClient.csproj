@@ -31,7 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NTSockHashCacheServer.Service.ServiceCache, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="NTSockHashCacheServer.Service.ServiceCache, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\HashCacheServer\bin\Debug\NTSockHashCacheServer.Service.ServiceCache.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

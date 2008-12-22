@@ -256,7 +256,7 @@ namespace ObjectMapping.Database
 		{
 			if (o.Id > 0)
 			{
-				throw new ApplicationException("Cannot add an existed object");
+				return o.Id;
 			}
 			objectGraph.Add(o, 0);
 			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(o.GetType());
@@ -312,9 +312,79 @@ namespace ObjectMapping.Database
 			return o.Id;
 		}
 
-		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames, IDictionary<string, IDbObject> objectGraph)
+		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames, IDictionary<string, IDbObject> objectGraph, DbConnection connection)
 		{
-			throw new System.NotImplementedException();
+			var o = (IDbObject) Activator.CreateInstance(type);
+			var classMetadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
+			var properties = classMetadata.Properties;
+			var relations = classMetadata.RelationProperties;
+			o.Id = reader.GetInt64(reader.GetOrdinal("Id"));
+			IList<RelationInfo> pendingRelations = new List<RelationInfo>();
+			string key = type.FullName + o.Id;
+			if (objectGraph.ContainsKey(key))
+			{
+				return objectGraph[key];
+			}
+			objectGraph.Add(key, o);
+			for (var i = 1; i < propertyNames.Count; i++) //index 0 is Id
+			{
+				var propertyName = propertyNames[i];
+				if (properties.ContainsKey(propertyName))
+				{
+					var mappingInfo = properties[propertyName];
+					var mappingField = mappingInfo.MappingField;
+					var propertyInfo = mappingInfo.PropertyInfo;
+					var propertyType = propertyInfo.PropertyType;
+					if (propertyType.IsPrimitive || propertyType == typeof(string) || propertyType == typeof(DateTime) || propertyType == typeof(decimal))
+					{
+						var propertyValue = reader.GetValue(reader.GetOrdinal(mappingField));
+						propertyInfo.SetValue(o, propertyValue, null);	
+					}
+					else
+					{
+						var rawData = DbSerializerHelper.ReadBlob(mappingField, reader);
+						object propertyValue = null;
+						if (rawData != null)
+						{
+							using (var stream = new MemoryStream(rawData))
+							{
+								var formatter = new BinaryFormatter();
+								propertyValue = formatter.Deserialize(stream);
+							}
+						}
+						propertyInfo.SetValue(o, propertyValue, null);	
+					}
+				}
+				else if (relations.ContainsKey(propertyName))
+				{
+					pendingRelations.Add(relations[propertyName]);
+				}
+				else
+				{
+					throw new ArgumentException("Cannot regconize property: " + propertyName);
+				}
+			}
+			reader.Close();
+			for (var i = 0; i < pendingRelations.Count; i++)
+			{
+				var relation = pendingRelations[i];
+				var propertyInfo = relation.PropertyInfo;
+				if (relation.RelationKind == RelationInfo.RELATION_1_1)
+				{
+					var elementType = propertyInfo.PropertyType;
+					var command = connection.CreateCommand();
+					command.CommandText = "SELECT * FROM " + relation.MappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
+					using (var relationReader = command.ExecuteReader(CommandBehavior.SingleRow))
+					{
+						if (relationReader.Read())
+						{
+							var propertyValue = ReadObject(elementType, relationReader, classMetadata.AllPropertiesName, objectGraph, connection);
+							propertyInfo.SetValue(o, propertyValue, null);	
+						}
+					}
+				}
+			}
+			return o;
 		}
 
 	}

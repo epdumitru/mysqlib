@@ -201,6 +201,11 @@ namespace ObjectMapping
 			get { return relationProperties; }
 		}
 
+		public IList<string> AllPropertiesName
+		{
+			get { return null; }
+		}
+
 		private void Init()
 		{
 			var persistentAttrs = type.GetCustomAttributes(typeof(PersistentAttribute), true);

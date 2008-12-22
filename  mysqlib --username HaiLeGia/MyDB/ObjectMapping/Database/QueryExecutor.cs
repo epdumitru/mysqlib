@@ -77,7 +77,7 @@ namespace ObjectMapping.Database
 				{
 					reader = command.ExecuteReader();
 				}
-				return CreateObjects<T>(reader, query.PropertyNames);
+				return CreateObjects<T>(reader, query.PropertyNames, connection);
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace ObjectMapping.Database
 				{
 					reader = command.ExecuteReader();
 				}
-				return CreateObject<T>(reader, query.PropertyNames);
+				return CreateObject<T>(reader, query.PropertyNames, connection);
 			}
 		}
 
@@ -132,6 +132,7 @@ namespace ObjectMapping.Database
 			}
 			var type = typeof (T);
 			var metadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
+			var properties = metadata.Properties;
 			var mappingTable = metadata.MappingTable;
 			using (var connection = connectionManager.GetReadConnection())
 			{
@@ -145,7 +146,10 @@ namespace ObjectMapping.Database
 				{
 					for (var i = 0; i < selectProperties.Count; i++)
 					{
-						str.Append(selectProperties[i] + ", ");
+						if (properties.ContainsKey(selectProperties[i]))
+						{
+							str.Append(selectProperties[i] + ", ");	
+						}
 					}
 					var tmpString = str.ToString(0, str.Length - 2);
 					str.Length = 0;
@@ -172,73 +176,7 @@ namespace ObjectMapping.Database
 				{
 					reader = command.ExecuteReader(CommandBehavior.SingleRow);
 				}
-				return CreateObject<T>(reader, selectProperties);
-			}
-		}
-
-		public T SelectByForeignKey<T>(string foreignKeyName, long referencedId, IsolationLevel? isolationLevel, params string[] propertyNames) where T : class
-		{
-			IList<string> selectProperties;
-			if (propertyNames != SelectQuery.ALL_PROPS)
-			{
-				var tempSelectProperties = new List<string>(propertyNames);
-				if (!tempSelectProperties.Contains("Id"))
-				{
-					tempSelectProperties.Add("Id");
-				}
-				if (!tempSelectProperties.Contains("UpdateTime"))
-				{
-					tempSelectProperties.Add("UpdateTime");
-				}
-				selectProperties = tempSelectProperties;
-			}
-			else
-			{
-				selectProperties = propertyNames;
-			}
-			var type = typeof(T);
-			var metadata = ClassMetaDataManager.Instace.GetClassMetaData(type);
-			var mappingTable = metadata.MappingTable;
-			using (var connection = connectionManager.GetReadConnection())
-			{
-				var command = connection.CreateCommand();
-				var str = new StringBuilder("SELECT ");
-				if (propertyNames == SelectQuery.ALL_PROPS)
-				{
-					str.Append("* ");
-				}
-				else
-				{
-					for (var i = 0; i < selectProperties.Count; i++)
-					{
-						str.Append(selectProperties[i] + ", ");
-					}
-					var tmpString = str.ToString(0, str.Length - 2);
-					str.Length = 0;
-					str.Append(tmpString);
-				}
-				str.AppendFormat(" FROM {0} WHERE {1} = {2}", mappingTable, foreignKeyName, referencedId);
-				command.CommandText = str.ToString();
-				DbDataReader reader;
-				if (isolationLevel != null)
-				{
-					var transaction = connection.BeginTransaction();
-					try
-					{
-						reader = command.ExecuteReader(CommandBehavior.SingleRow);
-						transaction.Commit();
-					}
-					catch (Exception e)
-					{
-						transaction.Rollback();
-						throw new ApplicationException(e.ToString());
-					}
-				}
-				else
-				{
-					reader = command.ExecuteReader(CommandBehavior.SingleRow);
-				}
-				return CreateObject<T>(reader, selectProperties);
+				return CreateObject<T>(reader, selectProperties, connection);
 			}
 		}
 
@@ -338,23 +276,23 @@ namespace ObjectMapping.Database
 			}
 		}
 
-		private T CreateObject<T>(DbDataReader reader, IList<string> propertyNames) where T : class 
+		private T CreateObject<T>(DbDataReader reader, IList<string> propertyNames, DbConnection connection) where T : class 
 		{
 			var type = typeof (T);
 			if (reader.Read())
 			{
-				return (T) dbFunctionHelper.ReadObject(type, reader, propertyNames, new Dictionary<string, IDbObject>());
+				return (T) dbFunctionHelper.ReadObject(type, reader, propertyNames, new Dictionary<string, IDbObject>(), connection);
 			}
 			return null;
 		}
 
-		private IList<T> CreateObjects<T>(DbDataReader reader, IList<string> propertyNames)
+		private IList<T> CreateObjects<T>(DbDataReader reader, IList<string> propertyNames, DbConnection connection)
 		{
 			var result = new List<T>();
 			var type = typeof(T);
 			while (reader.Read())
 			{
-				result.Add((T) dbFunctionHelper.ReadObject(type, reader, propertyNames, new Dictionary<string, IDbObject>()));
+				result.Add((T) dbFunctionHelper.ReadObject(type, reader, propertyNames, new Dictionary<string, IDbObject>(), connection));
 			}
 			return result;
 		}
