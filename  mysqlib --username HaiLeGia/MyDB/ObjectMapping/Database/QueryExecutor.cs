@@ -307,6 +307,32 @@ namespace ObjectMapping.Database
 			}
 		}
 
+		public int Insert(IDbObject dbObject, IsolationLevel? isolationLevel, long referencedId, string referencedColumn)
+		{
+			using (var connection = connectionManager.GetUpdateConnection())
+			{
+				if (isolationLevel != null)
+				{
+					var transaction = connection.BeginTransaction();
+					try
+					{
+						var result = dbFunctionHelper.Insert(dbObject, connection, referencedId, referencedColumn);
+						transaction.Commit();
+						return result;
+					}
+					catch (Exception e)
+					{
+						transaction.Rollback();
+						throw new ApplicationException(e.ToString());
+					}
+				}
+				else
+				{
+					return dbFunctionHelper.Insert(dbObject, connection);
+				}
+			}
+		}
+
 		public long Count<T>(IsolationLevel? isolationLevel)
 		{
 			var type = typeof (T);

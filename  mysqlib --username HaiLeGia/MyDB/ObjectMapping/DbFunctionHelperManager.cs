@@ -53,6 +53,13 @@ namespace ObjectMapping
 			return dbFunctionHelper.ReadObject(type, reader, propertyNames);
 		}
 
+		public int Insert(IDbObject o, DbConnection connection, long id, string column)
+		{
+			var type = o.GetType();
+			var dbFunctionHelper = GetDbFunctionHelper(type);
+			return dbFunctionHelper.Insert(o, connection, id, column);
+		}
+
 		#endregion
 
 		private IDbFunctionHelper GetDbFunctionHelper(Type type)

@@ -10,5 +10,6 @@ namespace ObjectMapping.Database
 		int Update(IDbObject o, DbConnection connection, long updateTime);
 		int Insert(IDbObject o, DbConnection connection);
 		object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames);
+		int Insert(IDbObject o, DbConnection connection, long id, string column);
 	}
 }
