@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading;
 using BLToolkit.Reflection.Emit;
 using MySql.Data.MySqlClient;
 using ObjectMapping.Database;
+using PropertyAttributes=System.Reflection.PropertyAttributes;
 
 namespace ObjectMapping
 {
@@ -33,31 +36,24 @@ namespace ObjectMapping
 			set { dbObjectContainer = value; }
 		}
 
-		public int Update(IDbObject o, DbConnection connection, long updateTime)
+		public int Update(IDbObject o, DbConnection connection, IDictionary<IDbObject, long> objectGraph)
 		{
 			var type = o.GetType();
 			var dbFunctionHelper = GetDbFunctionHelper(type);
-			return dbFunctionHelper.Update(o, connection, updateTime);
+			return dbFunctionHelper.Update(o, connection, objectGraph);
 		}
 
-		public int Insert(IDbObject o, DbConnection connection)
+		public long Insert(IDbObject o, DbConnection connection, IDictionary<IDbObject, long> objectGraph)
 		{
 			var type = o.GetType();
 			var dbFunctionHelper = GetDbFunctionHelper(type);
-			return dbFunctionHelper.Insert(o, connection);
+			return dbFunctionHelper.Insert(o, connection, objectGraph);
 		}
 
-		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames)
+		public object ReadObject(Type type, DbDataReader reader, IList<string> propertyNames, IDictionary<string, IDbObject> objectGraph)
 		{
 			var dbFunctionHelper = GetDbFunctionHelper(type);
-			return dbFunctionHelper.ReadObject(type, reader, propertyNames);
-		}
-
-		public int Insert(IDbObject o, DbConnection connection, long referenceId, string referenceColumn)
-		{
-			var type = o.GetType();
-			var dbFunctionHelper = GetDbFunctionHelper(type);
-			return dbFunctionHelper.Insert(o, connection, referenceId, referenceColumn);
+			return dbFunctionHelper.ReadObject(type, reader, propertyNames, objectGraph);
 		}
 
 		#endregion
@@ -203,6 +199,16 @@ namespace ObjectMapping
 
 			//Update relation
 			var relations = classMetadata.RelationProperties;
+			LocalBuilder queryExecutorLocal = null;
+			if (relations.Count > 0)
+			{
+				queryExecutorLocal = methodEmit.DeclareLocal(typeof (IQueryExecutor));
+				var dbObjectContainerField = typeBuilderHelper.TypeBuilder.GetField("dbObjectContainer");
+				methodEmit
+					.ldfld(dbObjectContainerField)
+					.call(typeof (DbObjectContainer).GetMethod("get_QueryExecutor"))
+					.stloc(queryExecutorLocal);
+			}
 			foreach (var relationInfo in relations.Values)
 			{
 				var propertyInfo = relationInfo.PropertyInfo;
@@ -211,6 +217,7 @@ namespace ObjectMapping
 				var listPersistentDbObjectLocal = methodEmit.DeclareLocal(typeof(IList<long>));
 				var listCurrentType = typeof (List<>).MakeGenericType(elementType);
 				var addElementMethod = typeof (ICollection<>).MakeGenericType(elementType).GetMethod("Add");
+				var countElementMethod = typeof (ICollection<>).MakeGenericType(elementType).GetMethod("Count");
 				var listConstructorMethod =
 					listCurrentType.GetConstructor(new[] {typeof (IEnumerable<>).MakeGenericType(elementType)});
 				var listCurrentDbObjectLocal = methodEmit.DeclareLocal(listCurrentType);
@@ -258,6 +265,59 @@ namespace ObjectMapping
 						;
 				}
 
+				var lenLocal = methodEmit.DeclareLocal(typeof (int));
+				var iLocal = methodEmit.DeclareLocal(typeof (int));
+				var beginForLabel = methodEmit.DefineLabel();
+				var beginForBodyLabel = methodEmit.DefineLabel();
+				var itemLocal = methodEmit.DeclareLocal(elementType);
+				var itemIdLocal = methodEmit.DeclareLocal(typeof (long));
+				var itemNullLabel = methodEmit.DefineLabel();
+				var getCurrentObjectElementMethod = listCurrentType.GetMethod("get_Item", new[] {typeof (int)});
+				var listPersistentContainCurrentElementLabel = methodEmit.DefineLabel();
+				var listPersistentNotContainCurrentElementLabel = methodEmit.DefineLabel();
+				
+				methodEmit
+					.ldloc(listCurrentDbObjectLocal)
+					.call(countElementMethod)
+					.stloc(lenLocal)
+					.ldc_i4_0
+					.stloc(iLocal)
+					.br(beginForLabel)
+					.MarkLabel(beginForBodyLabel)
+					.ldloc(listCurrentDbObjectLocal)
+					.ldloc(iLocal)
+					.call(getCurrentObjectElementMethod)
+					.stloc(itemLocal)
+					.ldloc(itemLocal)
+					.brfalse(itemNullLabel)
+					.ldloc(itemLocal)
+					.call(typeof(IDbObject).GetMethod("get_Id"))
+					.stloc(itemIdLocal)
+					.ldloc(listPersistentDbObjectLocal)
+					.ldloc(itemIdLocal)
+					.call(typeof(ICollection<long>).GetMethod("Contain"))
+					.brtrue(listPersistentContainCurrentElementLabel)
+					
+					.ldloc(queryExecutorLocal)
+					.ldloc(itemLocal)
+					.ldnull
+
+					.call(typeof(IQueryExecutor).GetMethod("Insert", new[] { typeof(IDbObject), typeof(IsolationLevel?), typeof(long), typeof(string) }))
+
+					.br(listPersistentNotContainCurrentElementLabel)
+					.MarkLabel(listPersistentContainCurrentElementLabel)
+
+					.MarkLabel(listPersistentNotContainCurrentElementLabel)
+					.MarkLabel(itemNullLabel)
+					.ldloc(iLocal)
+					.ldc_i4_1
+					.add
+					.stloc(iLocal)
+					.MarkLabel(beginForLabel)
+					.ldloc(iLocal)
+					.ldloc(lenLocal)
+					.blt(beginForBodyLabel)
+					;
 			}
 		}
 

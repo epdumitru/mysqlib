@@ -103,8 +103,8 @@ namespace ObjectMapping.Database
 			{
 				var originalTable = relationInfo.OriginalMetadata.MappingTable;
 				queryBuilder.Append("ALTER TABLE " + tableName + " ");
-				queryBuilder.Append("ADD COLUMN " + relationInfo.PartnerKey + " BIGINT(20) NULL, ");
-				queryBuilder.Append("ADD FOREIGN KEY (" + relationInfo.PartnerKey + ") REFERENCES " + originalTable +
+				queryBuilder.Append("ADD COLUMN " + relationInfo.OriginalKey + " BIGINT(20) NULL, ");
+				queryBuilder.Append("ADD FOREIGN KEY (" + relationInfo.OriginalKey + ") REFERENCES " + originalTable +
 				                    " (Id) ON DELETE SET NULL, ");
 				queryBuilder.Append("ADD INDEX (" + relationInfo.PartnerKey + ")");
 			}

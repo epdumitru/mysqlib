@@ -267,7 +267,7 @@ namespace ObjectMapping.Database
 						{
 							throw new ApplicationException("Cannot get update time of object: " + dbObject + " with id: " + dbObject.Id);
 						}
-						var result = dbFunctionHelper.Update(dbObject, connection, updateTime);
+						var result = dbFunctionHelper.Update(dbObject, connection, new Dictionary<IDbObject, long>());
 						transaction.Commit();
 						return result;
 					}
@@ -277,11 +277,11 @@ namespace ObjectMapping.Database
 						throw new ApplicationException(e.ToString());
 					}
 				}
-				return dbFunctionHelper.Update(dbObject, connection, -1);
+				return dbFunctionHelper.Update(dbObject, connection, new Dictionary<IDbObject, long>());
 			}
 		}
 
-		public int Insert(IDbObject dbObject, IsolationLevel? isolationLevel)
+		public long Insert(IDbObject dbObject, IsolationLevel? isolationLevel)
 		{
 			using (var connection = connectionManager.GetUpdateConnection())
 			{
@@ -290,7 +290,7 @@ namespace ObjectMapping.Database
 					var transaction = connection.BeginTransaction();
 					try
 					{
-						var result = dbFunctionHelper.Insert(dbObject, connection);
+						var result = dbFunctionHelper.Insert(dbObject, connection, new Dictionary<IDbObject, long>());
 						transaction.Commit();
 						return result;
 					}
@@ -302,33 +302,7 @@ namespace ObjectMapping.Database
 				}
 				else
 				{
-					return dbFunctionHelper.Insert(dbObject, connection);
-				}
-			}
-		}
-
-		public int Insert(IDbObject dbObject, IsolationLevel? isolationLevel, long referencedId, string referencedColumn)
-		{
-			using (var connection = connectionManager.GetUpdateConnection())
-			{
-				if (isolationLevel != null)
-				{
-					var transaction = connection.BeginTransaction();
-					try
-					{
-						var result = dbFunctionHelper.Insert(dbObject, connection, referencedId, referencedColumn);
-						transaction.Commit();
-						return result;
-					}
-					catch (Exception e)
-					{
-						transaction.Rollback();
-						throw new ApplicationException(e.ToString());
-					}
-				}
-				else
-				{
-					return dbFunctionHelper.Insert(dbObject, connection);
+					return dbFunctionHelper.Insert(dbObject, connection, new Dictionary<IDbObject, long>());
 				}
 			}
 		}
@@ -369,7 +343,7 @@ namespace ObjectMapping.Database
 			var type = typeof (T);
 			if (reader.Read())
 			{
-				return (T) dbFunctionHelper.ReadObject(type, reader, propertyNames);
+				return (T) dbFunctionHelper.ReadObject(type, reader, propertyNames, new Dictionary<string, IDbObject>());
 			}
 			return null;
 		}
@@ -380,7 +354,7 @@ namespace ObjectMapping.Database
 			var type = typeof(T);
 			while (reader.Read())
 			{
-				result.Add((T) dbFunctionHelper.ReadObject(type, reader, propertyNames));
+				result.Add((T) dbFunctionHelper.ReadObject(type, reader, propertyNames, new Dictionary<string, IDbObject>()));
 			}
 			return result;
 		}

@@ -14,8 +14,7 @@ namespace ObjectMapping.Database
         T SelectByForeignKey<T>(string foreignKeyName, long referencedId, IsolationLevel? isolationLevel,
 		                        params string[] propertyNames) where T : class;
 		int Update(IDbObject dbObject, IsolationLevel? isolationLevel);
-		int Insert(IDbObject dbObject, IsolationLevel? isolationLevel);
-		int Insert(IDbObject dbObject, IsolationLevel? isolationLevel, long referencedId, string referencedColumn);
+		long Insert(IDbObject dbObject, IsolationLevel? isolationLevel);
 		long Count<T>(IsolationLevel? isolationLevel);
 		
 	}

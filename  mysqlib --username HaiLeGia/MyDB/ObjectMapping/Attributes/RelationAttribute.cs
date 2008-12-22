@@ -11,24 +11,24 @@ namespace ObjectMapping.Attributes
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
 	public class OneToOneRelationAttribute : RelationAttribute
 	{
-		private string partnerKey;
+		private string originalKey;
 
-		public string PartnerKey
+		public string OriginalKey
 		{
-			get { return partnerKey; }
-			set { partnerKey = value; }
+			get { return originalKey; }
+			set { originalKey = value; }
 		}
 	}
 
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
 	public class OneToManyRelationAttribute : RelationAttribute
 	{
-		private string partnerKey;
+		private string originalKey;
 
-		public string PartnerKey
+		public string OriginalKey
 		{
-			get { return partnerKey; }
-			set { partnerKey = value; }
+			get { return originalKey; }
+			set { originalKey = value; }
 		}
 	}
 

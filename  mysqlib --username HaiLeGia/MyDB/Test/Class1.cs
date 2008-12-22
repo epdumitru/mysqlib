@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using BLToolkit.Reflection.Emit;
 using ObjectMapping;
 using ObjectMapping.Persistents;
@@ -17,6 +20,16 @@ namespace Test
 
 		public static void Main(string[] args)
 		{
+			var list = new List<int>();
+			list.Add(1);
+			list.Add(2);
+			list.Add(3);
+			IList list2 = list;
+			for (int i = 0; i < list2.Count; i++)
+			{
+				Console.WriteLine(list2[i]);
+			}
+			Console.ReadLine();
 //			for (int i = 0; i < len; i++)
 //			{
 //				Console.WriteLine(i);

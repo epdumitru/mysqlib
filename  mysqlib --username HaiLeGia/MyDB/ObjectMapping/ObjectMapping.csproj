@@ -85,6 +85,7 @@
     <Compile Include="Database\Expression\WherePart.cs" />
     <Compile Include="Database\Expression\Xor.cs" />
     <Compile Include="Database\ITableExecutor.cs" />
+    <Compile Include="Database\ReflectionDbFunctionHelper.cs" />
     <Compile Include="Database\SelectQuery.cs" />
     <Compile Include="Database\TableExecutor.cs" />
     <Compile Include="DbObjectContainer.cs" />
