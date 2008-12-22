@@ -1,12 +1,13 @@
 ﻿using System;
 using CommonLib;
+using ObjectMapping;
 
 namespace HashCacheServer.Service
 {
     public interface IServiceCache
     {
-        void Insert(long id, object o, TimeSpan time, bool isRelative, ObjectRemoved removeDelegate);
-        object Get(long id);
-        void Remote(long id);
+		string Insert(IDbObject o, TimeSpan time, bool isRelative, ObjectRemoved removeDelegate);
+        object Get(string id);
+        void Remote(string id);
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,8 +12,9 @@ namespace ObjectMapping.Persistents
         private long id;
         private string username;
         private string password;
-        private UserData other;
-        private string[] strArray;
+//        private UserData other;
+//        private string[] strArray;
+    	private long updateTime;
 
         public long Id
         {
@@ -23,8 +24,8 @@ namespace ObjectMapping.Persistents
 
     	public long UpdateTime
     	{
-    		get { throw new System.NotImplementedException(); }
-    		set { throw new System.NotImplementedException(); }
+			get { return updateTime;  }
+			set { updateTime = value; }
     	}
 
     	public string Username
@@ -39,22 +40,23 @@ namespace ObjectMapping.Persistents
             set { password = value; }
         }
 
-        [OneToOneRelation(OriginalKey = "Id")]
-        public UserData Other
-        {
-            get { return other; }
-            set { other = value; }
-        }
+//        [OneToOneRelation(OriginalKey = "Id")]
+//        public UserData Other
+//        {
+//            get { return other; }
+//            set { other = value; }
+//        }
 
-        public string[] StrArray
-        {
-            get { return strArray; }
-            set { strArray = value; }
-        }
+//        public string[] StrArray
+//        {
+//            get { return strArray; }
+//            set { strArray = value; }
+//        }
 
     	#region Implementation of IDbObject
 
     	private bool isDirty;
+		[IgnorePersistent]
     	public bool IsDirty
     	{
     		get { return isDirty; }

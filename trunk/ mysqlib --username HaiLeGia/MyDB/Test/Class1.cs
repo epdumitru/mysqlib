@@ -20,31 +20,31 @@ namespace Test
 
 		public static void Main(string[] args)
 		{
-			var list = new List<int>();
-			list.Add(1);
-			list.Add(2);
-			list.Add(3);
-			IList list2 = list;
-			for (int i = 0; i < list2.Count; i++)
-			{
-				Console.WriteLine(list2[i]);
-			}
-			Console.ReadLine();
+//			var list = new List<int>();
+//			list.Add(1);
+//			list.Add(2);
+//			list.Add(3);
+//			IList list2 = list;
+//			for (int i = 0; i < list2.Count; i++)
+//			{
+//				Console.WriteLine(list2[i]);
+//			}
+//			Console.ReadLine();
 //			for (int i = 0; i < len; i++)
 //			{
 //				Console.WriteLine(i);
 //			}
-//			var dbObjectContainer = new DbObjectContainer();
-//			dbObjectContainer.Register(typeof(UserData).Assembly);
+			var dbObjectContainer = new DbObjectContainer();
+			dbObjectContainer.Register(typeof(UserData).Assembly);
             
-//            UserData userData = new UserData();
+            UserData userData = new UserData();
 
 //            userData.Other  = dbObjectContainer.QueryExecutor.SelectById<UserData>(1, null, new string[] { "Username", "Password", "StrArray" });
-//            userData.Username = "abcd";
-//            userData.Password = "1234";
+            userData.Username = "abcd";
+            userData.Password = "1234";
 //            userData.StrArray = new string[] { "1", "2", "3" };
              
-//		    dbObjectContainer.QueryExecutor.Insert(userData, null);
+		    dbObjectContainer.QueryExecutor.Insert(userData, null);
 //			dbObjectContainer.QueryExecutor.Insert(userData, null);
 
 
@@ -111,7 +111,7 @@ namespace Test
 //			typeBuilder.Create();
 //			assemblyBuiler.Save();
 //			Console.WriteLine("OK");
-//			Console.ReadKey();
+			Console.ReadKey();
 				
 		}
 	}

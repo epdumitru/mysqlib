@@ -266,7 +266,8 @@ namespace ObjectMapping.Database
 			}
 			tmpString = queryBuilder.ToString(0, queryBuilder.Length - 2);
 			queryBuilder.Length = 0;
-			queryBuilder.Append(tmpString + ")");
+			queryBuilder.Append(tmpString + "); SELECT LAST_INSERT_ID()");
+			command.CommandText = queryBuilder.ToString();
 			foreach (var mappingInfo in properties.Values)
 			{
 				var mappingField = mappingInfo.MappingField;
