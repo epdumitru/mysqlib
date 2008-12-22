@@ -103,7 +103,7 @@ namespace ObjectMapping.Database
 				queryBuilder.Append("ADD COLUMN " + relationInfo.OriginalKey + " BIGINT(20) NULL, ");
 				queryBuilder.Append("ADD FOREIGN KEY (" + relationInfo.OriginalKey + ") REFERENCES " + originalTable +
 				                    " (Id) ON DELETE SET NULL, ");
-				queryBuilder.Append("ADD INDEX (" + relationInfo.PartnerKey + ")");
+				queryBuilder.Append("ADD INDEX (" + relationInfo.OriginalKey + ")");
 			}
 			else  if (relationInfo.RelationKind == RelationInfo.RELATION_N_N)
 			{

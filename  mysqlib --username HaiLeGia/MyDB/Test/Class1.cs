@@ -39,10 +39,10 @@ namespace Test
             
             UserData userData = new UserData();
 
-//            userData.Other  = dbObjectContainer.QueryExecutor.SelectById<UserData>(1, null, new string[] { "Username", "Password", "StrArray" });
+			userData.Other = userData; //dbObjectContainer.QueryExecutor.SelectById<UserData>(1, null, new string[] { "Username", "Password", "StrArray" });
             userData.Username = "abcd";
             userData.Password = "1234";
-//            userData.StrArray = new string[] { "1", "2", "3" };
+            userData.StrArray = new string[] { "1", "2", "3" };
              
 		    dbObjectContainer.QueryExecutor.Insert(userData, null);
 //			dbObjectContainer.QueryExecutor.Insert(userData, null);
