@@ -68,6 +68,10 @@
       <Project>{3D03BD67-1D68-469D-926F-85C267C11426}</Project>
       <Name>ObjectMapping</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Persistents\Persistents.csproj">
+      <Project>{A60D6D14-F57F-438A-9B81-33CFFB3E5084}</Project>
+      <Name>Persistents</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

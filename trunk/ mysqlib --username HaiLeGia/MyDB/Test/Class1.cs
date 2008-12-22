@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using BLToolkit.Reflection.Emit;
 using ObjectMapping;
-using ObjectMapping.Persistents;
+using Persistents;
 
 
 namespace Test
