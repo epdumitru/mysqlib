@@ -35,27 +35,30 @@ namespace Test
 //				Console.WriteLine(i);
 //			}
 			var dbObjectContainer = new DbObjectContainer();
-			dbObjectContainer.Register(typeof(UserData).Assembly);
+//			dbObjectContainer.Register(typeof(UserData).Assembly);
             
-//            A a = new A();
+            A a = new A();
 //			a.Id = 1;
-//			B b = new B();
-//			b.Name = "b";
+			B b = new B();
+			b.Name = "b";
 //			b.Id = 1;
-//			B b1 = new B();
-//			b1.Name = "b1";
+			B b1 = new B();
+			b1.Name = "b1";
 //			b1.Id = 2;
-//			B b2 = new B();
-//			b2.Name = "b2";
+			B b2 = new B();
+			b2.Name = "b2";
 //			b2.Id = 3;
-//			B b3 = new B();
-//			b3.Name = "b3";
-//			a.Bt = null;
-//			b.At = null;
-//			a.Str = "abc2";
-//			a.IsDirty = true;
-//			dbObjectContainer.QueryExecutor.Update(a, null);
-//			dbObjectContainer.QueryExecutor.Update(b, null);
+			B b3 = new B();
+			b3.Name = "b3";
+			a.Bt = new List<B>();
+			a.Bt.Add(b);
+			a.Bt.Add(b1);
+			a.Bt.Add(b2);
+			b.At = null;
+			a.Str = "abc2";
+			a.IsDirty = true;
+			dbObjectContainer.QueryExecutor.Insert(a, null);
+			dbObjectContainer.QueryExecutor.Insert(b, null);
 
 
 
