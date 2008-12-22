@@ -54,7 +54,7 @@ namespace ObjectMapping
 		public void Config(XmlDocument document)
 		{
 			var selectionAlgorithm = new RoundRobinConnectionSelection();
-			var localhostInfor = new ConnectionInfo() { DatabaseName = "test", HostName = "127.0.0.1", Username = "root", Password = "master" };
+			var localhostInfor = new ConnectionInfo() { DatabaseName = "test", HostName = "127.0.0.1", Username = "root", Password = "root" };
 			var listMaster = new List<ConnectionInfo>() { localhostInfor };
 			var listSlave = new List<ConnectionInfo>() { localhostInfor };
 			selectionAlgorithm.Infors = listSlave;

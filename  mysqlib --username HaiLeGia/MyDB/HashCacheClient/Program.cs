@@ -1,14 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using HashCacheClient.Service;
+using ObjectMapping.Persistents;
 
 namespace HashCacheClient
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
+			TimeSpan time = new TimeSpan(0,20, 0, 0);
+        	IServiceCacheLocal serviceCache = new ServiceCacheLocal();
+			UserData userData = new UserData();
+        	userData.Id = 1;
+        	userData.Username = "abc";
+		
+			serviceCache.Insert(userData.Username, userData,time, true, null);
+        	Console.ReadLine();
         }
     }
 }

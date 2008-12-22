@@ -59,6 +59,10 @@
       <Project>{7EA60B0B-A870-42F7-9A97-3492B7F9DAA5}</Project>
       <Name>NTSockv3</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ObjectMapping\ObjectMapping.csproj">
+      <Project>{3D03BD67-1D68-469D-926F-85C267C11426}</Project>
+      <Name>ObjectMapping</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
