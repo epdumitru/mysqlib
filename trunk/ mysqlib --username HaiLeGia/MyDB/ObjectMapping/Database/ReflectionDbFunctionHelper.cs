@@ -83,19 +83,22 @@ namespace ObjectMapping.Database
 				var mappingTable = relation.MappingTable;
 				var persistentRelation = new List<long>();
 				var command = connection.CreateCommand();
+				string queryField;
 				if (relation.RelationKind == RelationInfo.RELATION_N_N)
 				{
-					command.CommandText = "SELECT Id,`" + relation.PartnerKey + "` FROM " + mappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
+					command.CommandText = "SELECT `" + relation.PartnerKey + "` FROM " + mappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
+					queryField = relation.PartnerKey;
 				}
 				else
 				{
 					command.CommandText = "SELECT Id FROM " + mappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
+					queryField = "Id";
 				}
 				using (var reader = command.ExecuteReader())
 				{
 					while (reader.Read())
 					{
-						persistentRelation.Add(reader.GetInt64(reader.GetOrdinal("Id")));
+						persistentRelation.Add(reader.GetInt64(reader.GetOrdinal(queryField)));
 					}	
 				}
 				if (relation.RelationKind == RelationInfo.RELATION_1_1)
