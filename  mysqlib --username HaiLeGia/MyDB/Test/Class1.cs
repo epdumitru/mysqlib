@@ -20,45 +20,38 @@ namespace Test
 
 		public static void Main(string[] args)
 		{
-//			var list = new List<int>();
-//			list.Add(1);
-//			list.Add(2);
-//			list.Add(3);
-//			IList list2 = list;
-//			for (int i = 0; i < list2.Count; i++)
-//			{
-//				Console.WriteLine(list2[i]);
-//			}
-//			Console.ReadLine();
-//			for (int i = 0; i < len; i++)
-//			{
-//				Console.WriteLine(i);
-//			}
+			
 			var dbObjectContainer = new DbObjectContainer();
 //			dbObjectContainer.Register(typeof(UserData).Assembly);
-            
-            A a = new A();
-//			a.Id = 1;
-			B b = new B();
-			b.Name = "b";
-//			b.Id = 1;
+			A a1 = new A();
+			A a2 = new A();
+			A a3 = new A();
 			B b1 = new B();
-			b1.Name = "b1";
-//			b1.Id = 2;
 			B b2 = new B();
-			b2.Name = "b2";
-//			b2.Id = 3;
 			B b3 = new B();
+			b1.Name = "b1";
+			b2.Name = "b2";
 			b3.Name = "b3";
-			a.Bt = new List<B>();
-			a.Bt.Add(b);
-			a.Bt.Add(b1);
-			a.Bt.Add(b2);
-			b.At = null;
-			a.Str = "abc2";
-			a.IsDirty = true;
-			dbObjectContainer.QueryExecutor.Insert(a, null);
-			dbObjectContainer.QueryExecutor.Insert(b, null);
+			a1.Str = "a1";
+			a2.Str = "a2";
+			a3.Str = "a3";
+			a1.Bt = new List<B>();
+			b1.At = new List<A>();
+			a1.Bt.Add(b1);
+			a1.Bt.Add(null);
+			a1.Bt.Add(b3);
+			b1.At.Add(a1);
+			b1.At.Add(a2);
+			b1.At.Add(a3);
+			a1.Id = 1;
+			a2.Id = 2;
+			a3.Id = 3;
+			b1.Id = 1;
+			b2.Id = 2;
+			b2.Id = 3;
+			dbObjectContainer.QueryExecutor.Update(a1, null);
+			dbObjectContainer.QueryExecutor.Update(b1, null);
+           
 
 
 
