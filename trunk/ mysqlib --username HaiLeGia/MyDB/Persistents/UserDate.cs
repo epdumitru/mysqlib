@@ -96,8 +96,8 @@ namespace Persistents
 			get { return str; }
 			set { str = value; }
 		}
-		[OneToManyRelation]
-//		[ManyToManyRelation(OriginalColumn = "Aid", RelationTable = "AB" , OtherPartner = "Cid")]
+//		[OneToManyRelation]
+		[ManyToManyRelation(OriginalColumn = "Aid", RelationTable = "AB" , OtherPartner = "bid")]
 		public List<B> Bt
 		{
 			get { return bt; }
@@ -145,20 +145,20 @@ namespace Persistents
 			set { str = value; }
 		}
 
-		private A at;
-		[OneToOneRelation]
-		public A At
-		{
-			get { return at; }
-			set { at = value; }
-		}
-
-//		private List<A> at;
-//		[ManyToManyRelation(OriginalColumn = "Aid", RelationTable = "AB", OtherPartner = "Cid")]
-//		public List<A> At
+//		private A at;
+//		[OneToOneRelation]
+//		public A At
 //		{
 //			get { return at; }
 //			set { at = value; }
 //		}
+
+		private List<A> at;
+		[ManyToManyRelation(OriginalColumn = "bid", RelationTable = "AB", OtherPartner = "aid")]
+		public List<A> At
+		{
+			get { return at; }
+			set { at = value; }
+		}
 	}
 }

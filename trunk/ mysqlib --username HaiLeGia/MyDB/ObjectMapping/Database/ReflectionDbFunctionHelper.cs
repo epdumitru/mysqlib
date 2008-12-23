@@ -85,7 +85,7 @@ namespace ObjectMapping.Database
 				var command = connection.CreateCommand();
 				if (relation.RelationKind == RelationInfo.RELATION_N_N)
 				{
-					command.CommandText = "SELECT `" + relation.PartnerKey + "` FROM " + mappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
+					command.CommandText = "SELECT Id,`" + relation.PartnerKey + "` FROM " + mappingTable + " WHERE `" + relation.OriginalKey + "` = " + o.Id;
 				}
 				else
 				{
