@@ -144,8 +144,15 @@ namespace ObjectMapping.Database
 						{
 							Update(item, connection, objectGraph);
 						}
-						command.CommandText = "INSERT INTO " + mappingTable + "  ( `" + relation.OriginalKey + "`, `" + relation.PartnerKey + "`) VALUES (" + o.Id + ", " + item.Id + ")";
-						command.ExecuteNonQuery();
+						try
+						{
+							command.CommandText = "INSERT INTO " + mappingTable + "  ( `" + relation.OriginalKey + "`, `" + relation.PartnerKey + "`) VALUES (" + o.Id + ", " + item.Id + ")";
+							command.ExecuteNonQuery();
+						}
+						catch
+						{
+						}
+						
 					}
 				}
 			}
