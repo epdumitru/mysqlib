@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ObjectMapping;
 using ObjectMapping.Attributes;
 
@@ -116,8 +117,14 @@ namespace Persistents
         private long id;
         private string userName;
         private List<string> belong; //list userName
+    	
+    	public long UpateTime
+    	{
+    		get { return upateTime; }
+    		set { upateTime = value; }
+    	}
 
-        public HuniBelongList()
+    	public HuniBelongList()
         {
             belong = new List<string>();
         }
