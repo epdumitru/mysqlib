@@ -22,38 +22,7 @@ namespace Test
 		{
 			
 			var dbObjectContainer = new DbObjectContainer();
-//			dbObjectContainer.Register(typeof(UserData).Assembly);
-			A a1 = new A();
-			A a2 = new A();
-			A a3 = new A();
-			B b1 = new B();
-			B b2 = new B();
-			B b3 = new B();
-			b1.Name = "b1";
-			b2.Name = "b2";
-			b3.Name = "b3";
-			a1.Str = "a1";
-			a2.Str = "a2";
-			a3.Str = "a3";
-			a1.Bt = new List<B>();
-			b1.At = new List<A>();
-			a1.Bt.Add(b1);
-			a1.Bt.Add(null);
-			a1.Bt.Add(b3);
-			b1.At.Add(a1);
-			b1.At.Add(a2);
-			b1.At.Add(a3);
-			a1.Id = 1;
-			a2.Id = 2;
-			a3.Id = 3;
-			b1.Id = 1;
-			b2.Id = 2;
-			b3.Id = 3;
-			dbObjectContainer.QueryExecutor.Update(a1, null);
-			
-           
-
-
+			dbObjectContainer.Register(typeof(UserData).Assembly);
 
 
 
