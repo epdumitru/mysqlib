@@ -48,9 +48,9 @@ namespace Test
 			a3.Id = 3;
 			b1.Id = 1;
 			b2.Id = 2;
-			b2.Id = 3;
+			b3.Id = 3;
 			dbObjectContainer.QueryExecutor.Update(a1, null);
-			dbObjectContainer.QueryExecutor.Update(b1, null);
+			
            
 
 
