@@ -296,7 +296,8 @@ namespace ObjectMapping
 				else if (propertyType.IsGenericType)
 				{
 					var typeDefinition = propertyType.GetGenericTypeDefinition();
-					if ((typeDefinition == typeof(IList<>) || typeDefinition == typeof(List<>)) && propertyType.GetGenericArguments()[0].IsClass)
+					var argument = propertyType.GetGenericArguments()[0];
+					if ((typeDefinition == typeof(IList<>) || typeDefinition == typeof(List<>)) && argument.IsClass && !(argument == typeof(string)))
 					{
 						var propertyAttributes = propertyInfo.GetCustomAttributes(typeof(PropertyAttribute), true);
 						if (propertyAttributes.Length > 0)
